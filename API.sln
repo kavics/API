@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiExplorer", "ApiExplorer\ApiExplorer.csproj", "{F6BF6F13-C06F-4538-B1CF-2F5F9A4159DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetApi", "GetApi\GetApi.csproj", "{7989073B-9AF9-4943-9B2C-28DD167A0CBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{F6BF6F13-C06F-4538-B1CF-2F5F9A4159DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6BF6F13-C06F-4538-B1CF-2F5F9A4159DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6BF6F13-C06F-4538-B1CF-2F5F9A4159DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7989073B-9AF9-4943-9B2C-28DD167A0CBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7989073B-9AF9-4943-9B2C-28DD167A0CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7989073B-9AF9-4943-9B2C-28DD167A0CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7989073B-9AF9-4943-9B2C-28DD167A0CBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
