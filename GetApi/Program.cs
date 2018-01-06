@@ -1,4 +1,5 @@
-﻿using SpaceBender.ApiExplorer;
+﻿using SenseNet.Tools.CommandLineArguments;
+using SpaceBender.ApiExplorer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,33 +12,45 @@ namespace SpaceBender.ApiExplorer.GetApi
 {
     class Program
     {
-        private static string _sourceDirectory = null; // first argument. default: appdomain
-        private static string _output = null; // -o -output
-        private static bool _withInternalTypes = true; // -i -internals
-        //private static bool _internalTypesOnly = false; // -io -internalsonly
-
         static void Main(string[] args)
         {
-            var binPath = _sourceDirectory ?? AppDomain.CurrentDomain.BaseDirectory;
+            args = new[]
+            {
+                ".", "-withinternals"
+            };
 
-            foreach (var path in Directory.GetFiles(binPath, "*.dll").Union(Directory.GetFiles(binPath, "*.exe")))
-                Assembly.LoadFrom(path);
+            var arguments = new Arguments();
+            ArgumentParser parser;
+            try
+            {
+                parser = ArgumentParser.Parse(args, arguments);
+                if (parser.IsHelp)
+                {
+                    Console.WriteLine(parser.GetAppNameAndVersion());
+                    Console.WriteLine(parser.GetHelpText());
+                    return;
+                }
+            }
+            catch (ParsingException e)
+            {
+                parser = ArgumentParser.Parse(new[] { "?" }, arguments);
+                parser.GetAppNameAndVersion();
+                Console.WriteLine(e.FormattedMessage);
+                Console.WriteLine();
+                Console.WriteLine("Usage:");
+                Console.WriteLine(parser.GetUsage());
+                return;
+            }
 
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => _withInternalTypes ? a.GetTypes() : a.GetExportedTypes(), (a, t) => t)
-                .Where(x => (x.Namespace ?? "").StartsWith("SpaceBender", StringComparison.OrdinalIgnoreCase))
-                .Select(t => new ApiType(t))
-                .OrderBy(a => a.Assembly)
-                .ThenBy(a => a.Namespace)
-                .ThenBy(a => a.Name)
-                .ToArray();
+            var binPath = arguments.SourceDirectory;
+            var types = new Api(binPath).GetTypes();
 
             //var relevantTypes = types.Where(t => t.Namespace.Contains(".Search") && !t.Namespace.Contains("Tests")).ToArray();
             //var relevantTypes = types.Where(t => t.IsContentHandler).ToArray();
             //var relevantTypes = types.Where(t => t.Namespace.StartsWith("SenseNet.ContentRepository.Storage.Data") || t.Name.Contains("DataProvider")).ToArray();
             var relevantTypes = types; //.Where(t => t.Name == "DataProvider" || t.BaseType == "DataProvider").ToArray();
 
-            using (var writer = new StreamWriter(_output ?? $@"{binPath}\api.txt"))
+            using (var writer = new StreamWriter(arguments.TargetFile))
             {
                 Print(writer, relevantTypes, false);
 
