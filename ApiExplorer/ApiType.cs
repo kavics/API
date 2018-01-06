@@ -20,6 +20,8 @@ namespace SpaceBender.ApiExplorer
         public bool IsInterface { get; }
         public bool IsStaticClass { get; }
         public bool IsAbstractClass { get; }
+        public bool IsClass { get; }
+        public string Visibility { get; set; }
 
         public ApiMember[] Fields { get; }
         public ApiMember[] Properties { get; }
@@ -34,7 +36,7 @@ namespace SpaceBender.ApiExplorer
         private static BindingFlags _bindingFlagsForAllMembers =
             BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-        public ApiType(Type type)
+        public ApiType(Type type, bool withInternalMembers)
         {
             _type = type;
 
@@ -42,14 +44,18 @@ namespace SpaceBender.ApiExplorer
             IsInterface = type.IsInterface;
             IsStaticClass = type.IsAbstract && !type.IsInterface && type.IsSealed;
             IsAbstractClass = type.IsAbstract && !type.IsInterface && !type.IsSealed;
+            Visibility = type.IsPublic ? "public" : "not public";
+            IsClass = type.IsClass;
 
             var members = type.GetMembers(_bindingFlagsForAllMembers)
                 .Where(m => !m.Name.StartsWith("<")) // skip auto implementations e.g. "<>c__DisplayClass29_0"
                 .Where(m => m.DeclaringType == type)
-                .Select(ApiMember.Create)
-                .Where(m => !m.IsPrivate) // skip private members
-                .Where(m => !(m.IsAssembly && !m.IsFamilyOrAssembly)) // skip internal (and not protected) members
-                .ToArray();
+                .Select(ApiMember.Create);
+            if (!withInternalMembers)
+                members = members
+                    .Where(m => !m.IsPrivate) // skip private members
+                    .Where(m => !(m.IsAssembly && !m.IsFamilyOrAssembly)); // skip internal (and not protected) members
+            members = members.ToArray();
 
             Fields = members.Where(m => m.IsField).ToArray();
             Properties = members.Where(m => m.IsProperty).ToArray();

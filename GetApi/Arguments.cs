@@ -40,9 +40,9 @@ namespace SpaceBender.ApiExplorer.GetApi
             }
         }
 
-        [CommandLineArgument(name: "withinternals", required: false, aliases: "i+", helpText: "Shows internal classes and members")]
-        public bool WithInternals { get; set; }
-        [CommandLineArgument(name: "onlyinternals", required: false, aliases: "i-", helpText: "Shows only internal classes and members")]
-        public bool OnlyInternals { get; set; }
+        [CommandLineArgument(name: "allinternals", required: false, aliases: "i", helpText: "Shows internal classes and members")]
+        public bool AllInternals { get; set; }
+        [CommandLineArgument(name: "internalmembers", required: false, aliases: "im", helpText: "Shows internal members of public classes.")]
+        public bool InternalMembers { get; set; }
     }
 }

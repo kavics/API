@@ -12,13 +12,16 @@ namespace SpaceBender.ApiExplorer
 {
     public class Api
     {
-        private bool _withInternalTypes;
         private ApiType[] _types;
+        private bool _withInternals;
+        private bool _withInternalMembers;
 
         private string BinPath { get; set; }
 
-        public Api(string path)
+        public Api(string path, bool withInternals, bool withInternalMembers)
         {
+            _withInternals = withInternals;
+            _withInternalMembers = withInternalMembers;
             BinPath = path;
         }
 
@@ -29,13 +32,14 @@ namespace SpaceBender.ApiExplorer
                 foreach (var path in Directory.GetFiles(BinPath, "*.dll").Union(Directory.GetFiles(BinPath, "*.exe")))
                     Assembly.LoadFrom(path);
 
-                Regex rx = new Regex("SpaceBender.*", RegexOptions.IgnoreCase);
-
-                _types = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(a => _withInternalTypes ? a.GetTypes() : a.GetExportedTypes(), (a, t) => t)
-                    //.Where(x => (x.Namespace ?? "").StartsWith("SpaceBender", StringComparison.OrdinalIgnoreCase))
-                    .Where(x => rx.IsMatch(x.Namespace))
-                    .Select(t => new ApiType(t))
+                //Regex rx = new Regex("SpaceBender.*", RegexOptions.IgnoreCase);
+                var asms = AppDomain.CurrentDomain.GetAssemblies();
+                var relevantAsms = asms.Where(a => Path.GetDirectoryName(a.Location) == BinPath).ToArray();
+                _types = relevantAsms
+                    .SelectMany(a => _withInternals ? a.GetTypes() : a.GetExportedTypes(), (a, t) => t)
+                    //.Where(t => !t.Name.StartsWith("<")) // skip auto implementations e.g. "<>c__DisplayClass29_0"
+                    //.Where(x => rx.IsMatch(x.Namespace ?? ""))
+                    .Select(t => new ApiType(t, _withInternalMembers))
                     .OrderBy(a => a.Assembly)
                     .ThenBy(a => a.Namespace)
                     .ThenBy(a => a.Name)

@@ -2,6 +2,7 @@
 using SpaceBender.ApiExplorer;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,9 +17,10 @@ namespace SpaceBender.ApiExplorer.GetApi
         {
             args = new[]
             {
-                ".", "-withinternals"
+                ".", //"-im"
             };
 
+            var exit = false;
             var arguments = new Arguments();
             ArgumentParser parser;
             try
@@ -26,9 +28,8 @@ namespace SpaceBender.ApiExplorer.GetApi
                 parser = ArgumentParser.Parse(args, arguments);
                 if (parser.IsHelp)
                 {
-                    Console.WriteLine(parser.GetAppNameAndVersion());
                     Console.WriteLine(parser.GetHelpText());
-                    return;
+                    exit = true;
                 }
             }
             catch (ParsingException e)
@@ -39,11 +40,23 @@ namespace SpaceBender.ApiExplorer.GetApi
                 Console.WriteLine();
                 Console.WriteLine("Usage:");
                 Console.WriteLine(parser.GetUsage());
-                return;
+                exit = true;
             }
 
+            if (!exit)
+                Run(arguments);
+
+            if (Debugger.IsAttached)
+            {
+                Console.Write("Press <enter> to exit...");
+                Console.ReadLine();
+            }
+        }
+
+        private static void Run(Arguments arguments)
+        {
             var binPath = arguments.SourceDirectory;
-            var types = new Api(binPath).GetTypes();
+            var types = new Api(binPath, arguments.AllInternals, arguments.AllInternals || arguments.InternalMembers).GetTypes();
 
             //var relevantTypes = types.Where(t => t.Namespace.Contains(".Search") && !t.Namespace.Contains("Tests")).ToArray();
             //var relevantTypes = types.Where(t => t.IsContentHandler).ToArray();
@@ -77,7 +90,7 @@ namespace SpaceBender.ApiExplorer.GetApi
 
             foreach (var t in relevantTypes.Where(t => t.IsEnum))
             {
-                writer.WriteLine($"Enum\t{t.Assembly}\t{t.Namespace}\t{t.Name}");
+                writer.WriteLine($"{t.Visibility}\tEnum\t{t.Assembly}\t{t.Namespace}\t{t.Name}");
                 if (withMembers)
                     WriteMembers(writer, t);
             }
@@ -85,28 +98,35 @@ namespace SpaceBender.ApiExplorer.GetApi
             foreach (var t in relevantTypes.Where(t => t.IsInterface))
             {
                 var baseType = (!string.IsNullOrEmpty(t.BaseType) && t.BaseType != "Object") ? ": " + t.BaseType : "";
-                writer.WriteLine($"Interface\t{t.Assembly}\t{t.Namespace}\t{t.Name}\t{baseType}");
+                writer.WriteLine($"{t.Visibility}\tInterface\t{t.Assembly}\t{t.Namespace}\t{t.Name}\t{baseType}");
                 if (withMembers)
                     WriteMembers(writer, t);
             }
 
             foreach (var t in relevantTypes.Where(t => t.IsAbstractClass))
             {
-                writer.WriteLine($"Abstract class\t{t.Assembly}\t{t.Namespace}\t{t.Name}\t{(t.BaseType != "Object" ? ": " + t.BaseType : "")}");
+                writer.WriteLine($"{t.Visibility}\tAbstract class\t{t.Assembly}\t{t.Namespace}\t{t.Name}\t{(t.BaseType != "Object" ? ": " + t.BaseType : "")}");
                 if (withMembers)
                     WriteMembers(writer, t);
             }
 
             foreach (var t in relevantTypes.Where(t => t.IsStaticClass))
             {
-                writer.WriteLine($"Static class\t{t.Assembly}\t{t.Namespace}\t{t.Name}");
+                writer.WriteLine($"{t.Visibility}\tStatic class\t{t.Assembly}\t{t.Namespace}\t{t.Name}");
                 if (withMembers)
                     WriteMembers(writer, t);
             }
 
-            foreach (var t in relevantTypes.Where(t => !t.IsEnum && !t.IsInterface && !t.IsAbstractClass && !t.IsStaticClass))
+            foreach (var t in relevantTypes.Where(t => t.IsClass && !t.IsStaticClass && !t.IsAbstractClass))
             {
-                writer.WriteLine($"Class\t{t.Assembly}\t{t.Namespace}\t{t.Name}\t{(t.BaseType != "Object" ? ": " + t.BaseType : "")}");
+                writer.WriteLine($"{t.Visibility}\tClass\t{t.Assembly}\t{t.Namespace}\t{t.Name}\t{(t.BaseType != "Object" ? ": " + t.BaseType : "")}");
+                if (withMembers)
+                    WriteMembers(writer, t);
+            }
+
+            foreach (var t in relevantTypes.Where(t => !t.IsEnum && !t.IsInterface && !t.IsAbstractClass && !t.IsStaticClass && !t.IsClass))
+            {
+                writer.WriteLine($"{t.Visibility}\tStruct\t{t.Assembly}\t{t.Namespace}\t{t.Name}\t{(t.BaseType != "Object" ? ": " + t.BaseType : "")}");
                 if (withMembers)
                     WriteMembers(writer, t);
             }
@@ -116,19 +136,25 @@ namespace SpaceBender.ApiExplorer.GetApi
         private static void WriteMembers(TextWriter writer, ApiType t)
         {
             foreach (var item in t.Fields)
-                writer.WriteLine("\t\t\t\t\t" + item);
+                writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.Properties)
-                writer.WriteLine("\t\t\t\t\t" + item);
+                writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.Events)
-                writer.WriteLine("\t\t\t\t\t" + item);
+                writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.Constructors)
-                writer.WriteLine("\t\t\t\t\t" + item);
+                writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.Methods)
-                writer.WriteLine("\t\t\t\t\t" + item);
+                writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.NestecClasses)
-                writer.WriteLine("\t\t\t\t\t" + item);
+                writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.OtherMembers)
-                writer.WriteLine("\t\t\t\t\t" + item);
+                writer.WriteLine("\t\t\t\t\t\t" + item);
         }
+    }
+
+    public struct asdf
+    {
+        internal int qwer;
+        internal int YXCV { get; }
     }
 }
