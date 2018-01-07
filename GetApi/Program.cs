@@ -56,7 +56,13 @@ namespace SpaceBender.ApiExplorer.GetApi
         private static void Run(Arguments arguments)
         {
             var binPath = arguments.SourceDirectory;
-            var types = new Api(binPath, arguments.AllInternals, arguments.AllInternals || arguments.InternalMembers).GetTypes();
+            var filter = new Filter
+            {
+                Namespace = null,
+                WithInternals = arguments.AllInternals,
+                WithInternalMembers = arguments.InternalMembers
+            };
+            var types = new Api(binPath, filter).GetTypes();
 
             //var relevantTypes = types.Where(t => t.Namespace.Contains(".Search") && !t.Namespace.Contains("Tests")).ToArray();
             //var relevantTypes = types.Where(t => t.IsContentHandler).ToArray();

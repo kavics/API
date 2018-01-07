@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace SpaceBender.ApiExplorer
 {
+    /// <summary>
+    /// Decorator of a type. Contains simplified names to display.
+    /// Contains grouped wrapped members of the decorated type.
+    /// </summary>
     public class ApiType
     {
         private Type _type;

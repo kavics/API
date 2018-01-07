@@ -13,16 +13,14 @@ namespace SpaceBender.ApiExplorer
     public class Api
     {
         private ApiType[] _types;
-        private bool _withInternals;
-        private bool _withInternalMembers;
+        private Filter _filter;
 
         private string BinPath { get; set; }
 
-        public Api(string path, bool withInternals, bool withInternalMembers)
+        public Api(string binPath, Filter filter)
         {
-            _withInternals = withInternals;
-            _withInternalMembers = withInternalMembers;
-            BinPath = path;
+            BinPath = binPath;
+            this._filter = filter;
         }
 
         public ApiType[] GetTypes()
@@ -32,18 +30,23 @@ namespace SpaceBender.ApiExplorer
                 foreach (var path in Directory.GetFiles(BinPath, "*.dll").Union(Directory.GetFiles(BinPath, "*.exe")))
                     Assembly.LoadFrom(path);
 
-                //Regex rx = new Regex("SpaceBender.*", RegexOptions.IgnoreCase);
+                Regex namespaceRegex = null;
+                if(_filter.Namespace != null)
+                    namespaceRegex = new Regex(_filter.Namespace, RegexOptions.IgnoreCase);
+
                 var asms = AppDomain.CurrentDomain.GetAssemblies();
                 var relevantAsms = asms.Where(a => Path.GetDirectoryName(a.Location) == BinPath).ToArray();
-                _types = relevantAsms
-                    .SelectMany(a => _withInternals ? a.GetTypes() : a.GetExportedTypes(), (a, t) => t)
-                    //.Where(t => !t.Name.StartsWith("<")) // skip auto implementations e.g. "<>c__DisplayClass29_0"
-                    //.Where(x => rx.IsMatch(x.Namespace ?? ""))
-                    .Select(t => new ApiType(t, _withInternalMembers))
+                var types = relevantAsms
+                    .SelectMany(a => _filter.WithInternals ? a.GetTypes() : a.GetExportedTypes(), (a, t) => t);
+                //.Where(t => !t.Name.StartsWith("<")) // skip auto implementations e.g. "<>c__DisplayClass29_0"
+                if (namespaceRegex != null)
+                    types = types.Where(x => namespaceRegex.IsMatch(x.Namespace ?? ""));
+                var apiTypes = types
+                    .Select(t => new ApiType(t, _filter.WithInternalMembers))
                     .OrderBy(a => a.Assembly)
                     .ThenBy(a => a.Namespace)
-                    .ThenBy(a => a.Name)
-                    .ToArray();
+                    .ThenBy(a => a.Name);
+                _types = apiTypes.ToArray();
             }
             return _types;
         }
