@@ -12,12 +12,7 @@ namespace Tests
         public void Api_PublicApi()
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
-            var filter = new Filter
-            {
-                WithInternals = false,
-                WithInternalMembers = false,
-                Namespace = ".*Tests.TestClasses1.*"
-            };
+            var filter = new Filter { Namespace = ".*Tests.TestClasses1.*" };
             var types = new Api(binPath, filter).GetTypes();
 
             var expected = "IPub, PubAC, PubC, PubEnum, PubNCofPub, PubSeC, PubStC, PubStruct";
@@ -25,10 +20,19 @@ namespace Tests
 
             Assert.AreEqual(expected, actual);
         }
+        [TestMethod]
+        public void Api_AllTypes()
+        {
+            var binPath = AppDomain.CurrentDomain.BaseDirectory;
+            var filter = new Filter { WithInternals = true, Namespace = ".*Tests.TestClasses1.*" };
+            var types = new Api(binPath, filter).GetTypes();
+
+            var expected = "IInt, IntAC, IntC, IntEnum, IntNCofInt, IntNCofPub, IntSeC, IntStC, IntStruct, IPub, " +
+                           "PriNCofInt, PriNCofPub, " +
+                           "PubAC, PubC, PubEnum, PubNCofInt, PubNCofPub, PubSeC, PubStC, PubStruct";
+            var actual = string.Join(", ", types.Select(t => t.Name).OrderBy(s => s));
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
-/*
-Expected:<IPub, PubAC, PubC, PubEnum, PubNCoP  , PubSeC, PubStC, PubStruct>
-. Actual:<IPub, PubAC, PubC, PubEnum, PubNCoPub, PubSeC, PubStC, PubStruct>.
-
-*/
