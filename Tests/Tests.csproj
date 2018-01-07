@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="GatheringTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestClasses.cs" />
+    <Compile Include="TestClasses1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ApiExplorer\ApiExplorer.csproj">

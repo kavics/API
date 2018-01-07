@@ -9,21 +9,26 @@ namespace Tests
     public class GatheringTests
     {
         [TestMethod]
-        public void Api()
+        public void Api_PublicApi()
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
             var filter = new Filter
             {
                 WithInternals = false,
                 WithInternalMembers = false,
-                Namespace = ".*Tests.TestClasses.*"
+                Namespace = ".*Tests.TestClasses1.*"
             };
             var types = new Api(binPath, filter).GetTypes();
 
-            var expected = "IPublicInterface, PublicAbstractClass, PublicClass, PublicEnum, PublicNestedClass1, PublicStaticClass, PublicStruct";
+            var expected = "IPub, PubAC, PubC, PubEnum, PubNCofPub, PubSeC, PubStC, PubStruct";
             var actual = string.Join(", ", types.Select(t => t.Name).OrderBy(s => s));
 
             Assert.AreEqual(expected, actual);
         }
     }
 }
+/*
+Expected:<IPub, PubAC, PubC, PubEnum, PubNCoP  , PubSeC, PubStC, PubStruct>
+. Actual:<IPub, PubAC, PubC, PubEnum, PubNCoPub, PubSeC, PubStC, PubStruct>.
+
+*/
