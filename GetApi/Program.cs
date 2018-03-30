@@ -17,7 +17,8 @@ namespace SpaceBender.ApiExplorer.GetApi
         {
             args = new[]
             {
-                ".", //"-im"
+                //".", //"-im"
+                @"..\..\..\Tests\bin\Debug"//, "-im"
             };
 
             var exit = false;

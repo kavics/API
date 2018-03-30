@@ -74,7 +74,7 @@ namespace SpaceBender.ApiExplorer
                     IsFamilyOrAssembly = method.IsFamilyOrAssembly,
                     IsPublic = method.IsPublic,
                     IsAbstract = method.IsAbstract,
-                    IsVirtual = method.IsVirtual,
+                    IsVirtual = method.IsAbstract ? false : method.IsVirtual,
                     IsFinal = method.IsFinal,
                     IsStatic = method.IsStatic,
                 };
@@ -99,7 +99,7 @@ namespace SpaceBender.ApiExplorer
                     IsFamilyOrAssembly = methodInfo.IsFamilyOrAssembly,
                     IsPublic = methodInfo.IsPublic,
                     IsAbstract = methodInfo.IsAbstract,
-                    IsVirtual = methodInfo.IsVirtual,
+                    IsVirtual = methodInfo.IsAbstract ? false : methodInfo.IsVirtual,
                     IsFinal = methodInfo.IsFinal,
                     IsStatic = methodInfo.IsStatic,
                 };
@@ -124,7 +124,7 @@ namespace SpaceBender.ApiExplorer
                     IsFamilyOrAssembly = ctorInfo.IsFamilyOrAssembly,
                     IsPublic = ctorInfo.IsPublic,
                     IsAbstract = ctorInfo.IsAbstract,
-                    IsVirtual = ctorInfo.IsVirtual,
+                    IsVirtual = ctorInfo.IsAbstract ? false : ctorInfo.IsVirtual,
                     IsFinal = ctorInfo.IsFinal,
                     IsStatic = ctorInfo.IsStatic,
                 };
@@ -145,7 +145,7 @@ namespace SpaceBender.ApiExplorer
                     IsFamilyOrAssembly = method.IsFamilyOrAssembly,
                     IsPublic = method.IsPublic,
                     IsAbstract = method.IsAbstract,
-                    IsVirtual = method.IsVirtual,
+                    IsVirtual = method.IsAbstract ? false : method.IsVirtual,
                     IsFinal = method.IsFinal,
                     IsStatic = method.IsStatic,
                 };

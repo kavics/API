@@ -41,12 +41,39 @@ namespace Tests
             var filter = new Filter { Namespace = ".*.TestClasses2.*" };
             var types = new Api(binPath, filter).GetTypes();
 
-            var expected = "_protectedField, _protectedInternalField, _publicField";
-            var actual = string.Join(", ", types[0].Fields.Select(f => f.Name).OrderBy(s => s));
+            var expectedFields = "_protectedField, _protectedInternalField, _publicField";
+            var actualFields = string.Join(", ", types[0].Fields.Select(f => f.Name).OrderBy(s => s));
+            Assert.AreEqual(expectedFields, actualFields);
 
-            Assert.AreEqual(expected, actual);
+            var expectedProperties = "P1, P2, P4, P5, P6, P7";
+            var actualProperties = string.Join(", ", types[0].Properties.Select(f => f.Name).OrderBy(s => s));
+            Assert.AreEqual(expectedProperties, actualProperties);
 
-            Assert.Inconclusive(" ?? property, method, etc?");
+            var expectedMethods = "M1, M2, M4, MA0, MA1, MA3, MS1, MS2, MS4, MV1, MV2, MV4, ToString";
+            var actualMethods = string.Join(", ", types[0].Methods.Select(f => f.Name).OrderBy(s => s));
+            Assert.AreEqual(expectedMethods, actualMethods);
+        }
+        [TestMethod]
+        public void Api_Members_All()
+        {
+            var binPath = AppDomain.CurrentDomain.BaseDirectory;
+            var filter = new Filter { Namespace = ".*.TestClasses2.*", WithInternalMembers = true };
+            var types = new Api(binPath, filter).GetTypes();
+
+            var expectedFields = "_internalField, _privateField, _protectedField, _protectedInternalField, _publicField";
+            var actualFields = string.Join(", ", types[0].Fields.Select(f => f.Name).OrderBy(s => s));
+            Assert.AreEqual(expectedFields, actualFields);
+
+            var expectedProperties = "P0, P1, P2, P3, P4, P5, P6, P7";
+            var actualProperties = string.Join(", ", types[0].Properties.Select(f => f.Name).OrderBy(s => s));
+            Assert.AreEqual(expectedProperties, actualProperties);
+
+            var expectedMethods = "M0, M1, M2, M3, M4, MA0, MA1, MA2, MA3, MS0, MS1, MS2, MS3, MS4, MV1, MV2, MV3, MV4, ToString";
+            var actualMethods = string.Join(", ", types[0].Methods.Select(f => f.Name).OrderBy(s => s));
+            Assert.AreEqual(expectedMethods, actualMethods);
         }
     }
 }
+/*
+
+*/

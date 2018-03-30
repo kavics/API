@@ -17,10 +17,10 @@ namespace SpaceBender.ApiExplorer
 
         private string BinPath { get; set; }
 
-        public Api(string binPath, Filter filter)
+        public Api(string binPath, Filter filter = null)
         {
             BinPath = binPath;
-            this._filter = filter;
+            this._filter = filter ?? new Filter();
         }
 
         public ApiType[] GetTypes()

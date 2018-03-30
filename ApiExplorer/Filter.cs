@@ -27,7 +27,8 @@ namespace SpaceBender.ApiExplorer
         /// Adds internal or private members to the member list of a type.
         /// The value is true if the WithInternals property is true.
         /// </summary>
-        public bool WithInternalMembers {
+        public bool WithInternalMembers
+        {
             get { return WithInternals || _withInternalMembers; }
             set { _withInternalMembers = value; }
         }
