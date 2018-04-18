@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SpaceBender.ApiExplorer;
+using Kavics.ApiExplorer;
 using System.Linq;
 
 namespace Tests

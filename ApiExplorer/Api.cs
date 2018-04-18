@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace SpaceBender.ApiExplorer
+namespace Kavics.ApiExplorer
 {
     public class Api
     {
@@ -19,7 +15,7 @@ namespace SpaceBender.ApiExplorer
 
         public Api(string binPath, Filter filter = null)
         {
-            BinPath = binPath;
+            BinPath = binPath.Trim('\\');
             this._filter = filter ?? new Filter();
         }
 

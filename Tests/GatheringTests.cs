@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SpaceBender.ApiExplorer;
 using System.Linq;
+using Kavics.ApiExplorer;
 
 namespace Tests
 {

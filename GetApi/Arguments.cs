@@ -1,12 +1,9 @@
 ﻿using SenseNet.Tools.CommandLineArguments;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
-namespace SpaceBender.ApiExplorer.GetApi
+namespace Kavics.ApiExplorer.GetApi
 {
     internal class Arguments
     {
@@ -18,7 +15,7 @@ namespace SpaceBender.ApiExplorer.GetApi
             get
             {
                 if (_sourceDirectory == null)
-                    _sourceDirectory = Path.GetFullPath(sourceDirectoryArg);
+                    _sourceDirectory = Path.GetFullPath(sourceDirectoryArg ?? AppDomain.CurrentDomain.BaseDirectory);
                 return _sourceDirectory;
             }
         }
@@ -44,5 +41,6 @@ namespace SpaceBender.ApiExplorer.GetApi
         public bool AllInternals { get; set; }
         [CommandLineArgument(name: "internalmembers", required: false, aliases: "im", helpText: "Shows internal members of public classes.")]
         public bool InternalMembers { get; set; }
+
     }
 }

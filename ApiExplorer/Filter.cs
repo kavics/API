@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SpaceBender.ApiExplorer
+﻿namespace Kavics.ApiExplorer
 {
     /// <summary>
     /// Filters the types and members when assemlies are scanned.
@@ -13,7 +7,7 @@ namespace SpaceBender.ApiExplorer
     {
         /// <summary>
         /// Regex for filter namespace of a type. The typelist will contain only matching types.
-        /// For example ".*SpaceBender.*" means types that's namespace contains the "SpaceBender".
+        /// For example ".*Kavics.*" means types that's namespace contains the "SpaceBender".
         /// </summary>
         public string Namespace { get; set; }
 

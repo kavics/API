@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SpaceBender.ApiExplorer
+namespace Kavics.ApiExplorer
 {
     /// <summary>
     /// Decorator of a type. Contains simplified names to display.

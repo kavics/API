@@ -1,26 +1,15 @@
 ﻿using SenseNet.Tools.CommandLineArguments;
-using SpaceBender.ApiExplorer;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SpaceBender.ApiExplorer.GetApi
+namespace Kavics.ApiExplorer.GetApi
 {
     class Program
     {
         static void Main(string[] args)
         {
-            args = new[]
-            {
-                //".", //"-im"
-                @"..\..\..\Tests\bin\Debug"//, "-im"
-            };
-
             var exit = false;
             var arguments = new Arguments();
             ArgumentParser parser;

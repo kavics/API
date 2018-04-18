@@ -7,7 +7,7 @@
     <ProjectGuid>{7989073B-9AF9-4943-9B2C-28DD167A0CBC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SpaceBender.ApiExplorer.GetApi</RootNamespace>
+    <RootNamespace>Kavics.ApiExplorer.GetApi</RootNamespace>
     <AssemblyName>GetApi</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
