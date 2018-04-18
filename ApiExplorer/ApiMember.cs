@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SpaceBender.ApiExplorer
+namespace Kavics.ApiExplorer
 {
     public class ApiMember
     {
         public string Representation { get; }
+        public string Name { get; }
 
         public bool IsField { get; private set; }
         public bool IsProperty { get; private set; }
@@ -32,8 +31,9 @@ namespace SpaceBender.ApiExplorer
 
 
 
-        public ApiMember(string representation)
+        private ApiMember(string name, string representation)
         {
+            Name = name;
             Representation = representation;
         }
 
@@ -43,7 +43,7 @@ namespace SpaceBender.ApiExplorer
             if (fieldInfo != null)
             {
 
-                return new ApiMember($"{GetTypeName(fieldInfo.FieldType)} {fieldInfo.Name}")
+                return new ApiMember(fieldInfo.Name, $"{GetTypeName(fieldInfo.FieldType)} {fieldInfo.Name}")
                 {
                     IsField = true,
 
@@ -61,7 +61,7 @@ namespace SpaceBender.ApiExplorer
             if (propertyInfo != null)
             {
                 var method = propertyInfo.GetMethod ?? propertyInfo.SetMethod;
-                return new ApiMember($"{GetTypeName(propertyInfo.PropertyType)} {propertyInfo.Name} {{ {(propertyInfo.CanRead ? "get;" : "")} {(propertyInfo.CanWrite ? "set;" : "")} }}")
+                return new ApiMember(propertyInfo.Name, $"{GetTypeName(propertyInfo.PropertyType)} {propertyInfo.Name} {{ {(propertyInfo.CanRead ? "get;" : "")} {(propertyInfo.CanWrite ? "set;" : "")} }}")
                 {
                     IsProperty = true,
 
@@ -72,7 +72,7 @@ namespace SpaceBender.ApiExplorer
                     IsFamilyOrAssembly = method.IsFamilyOrAssembly,
                     IsPublic = method.IsPublic,
                     IsAbstract = method.IsAbstract,
-                    IsVirtual = method.IsVirtual,
+                    IsVirtual = method.IsAbstract ? false : method.IsVirtual,
                     IsFinal = method.IsFinal,
                     IsStatic = method.IsStatic,
                 };
@@ -86,7 +86,7 @@ namespace SpaceBender.ApiExplorer
                     .ToArray();
                 var parameters = string.Join(", ", x);
 
-                return new ApiMember($"{GetTypeName(methodInfo.ReturnType)} {methodInfo.Name} ({parameters})")
+                return new ApiMember(methodInfo.Name, $"{GetTypeName(methodInfo.ReturnType)} {methodInfo.Name} ({parameters})")
                 {
                     IsMethod = !methodInfo.Name.StartsWith("get_") && !methodInfo.Name.StartsWith("set_"),
 
@@ -97,7 +97,7 @@ namespace SpaceBender.ApiExplorer
                     IsFamilyOrAssembly = methodInfo.IsFamilyOrAssembly,
                     IsPublic = methodInfo.IsPublic,
                     IsAbstract = methodInfo.IsAbstract,
-                    IsVirtual = methodInfo.IsVirtual,
+                    IsVirtual = methodInfo.IsAbstract ? false : methodInfo.IsVirtual,
                     IsFinal = methodInfo.IsFinal,
                     IsStatic = methodInfo.IsStatic,
                 };
@@ -111,7 +111,7 @@ namespace SpaceBender.ApiExplorer
                     .ToArray();
                 var parameters = string.Join(", ", x);
 
-                return new ApiMember($"{ctorInfo.Name} ({parameters})")
+                return new ApiMember(ctorInfo.Name, $"{ctorInfo.Name} ({parameters})")
                 {
                     IsConstructor = true,
 
@@ -122,7 +122,7 @@ namespace SpaceBender.ApiExplorer
                     IsFamilyOrAssembly = ctorInfo.IsFamilyOrAssembly,
                     IsPublic = ctorInfo.IsPublic,
                     IsAbstract = ctorInfo.IsAbstract,
-                    IsVirtual = ctorInfo.IsVirtual,
+                    IsVirtual = ctorInfo.IsAbstract ? false : ctorInfo.IsVirtual,
                     IsFinal = ctorInfo.IsFinal,
                     IsStatic = ctorInfo.IsStatic,
                 };
@@ -132,7 +132,7 @@ namespace SpaceBender.ApiExplorer
             if (eventInfo != null)
             {
                 var method = eventInfo.AddMethod;
-                return new ApiMember($"{GetTypeName(eventInfo.EventHandlerType)} {eventInfo.Name}")
+                return new ApiMember(eventInfo.Name, $"{GetTypeName(eventInfo.EventHandlerType)} {eventInfo.Name}")
                 {
                     IsEvent = true,
 
@@ -143,7 +143,7 @@ namespace SpaceBender.ApiExplorer
                     IsFamilyOrAssembly = method.IsFamilyOrAssembly,
                     IsPublic = method.IsPublic,
                     IsAbstract = method.IsAbstract,
-                    IsVirtual = method.IsVirtual,
+                    IsVirtual = method.IsAbstract ? false : method.IsVirtual,
                     IsFinal = method.IsFinal,
                     IsStatic = method.IsStatic,
                 };
@@ -154,7 +154,7 @@ namespace SpaceBender.ApiExplorer
             {
                 var name = nestedType.Name;
                 var apiType = nestedType.IsInterface ? "interface" : (nestedType.IsClass ? "class" : "struct");
-                return new ApiMember($"{apiType} {GetTypeName(nestedType)}")
+                return new ApiMember(GetTypeName(nestedType), $"{apiType} {GetTypeName(nestedType)}")
                 {
                     IsNestedClass = true,
 
@@ -164,7 +164,7 @@ namespace SpaceBender.ApiExplorer
                 };
             }
 
-            return new ApiMember("??\t" + member.Name)
+            return new ApiMember(member.Name, "??\t" + member.Name)
             {
                 IsOther = true
             };
