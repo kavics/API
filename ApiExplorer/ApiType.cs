@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -10,12 +11,10 @@ namespace Kavics.ApiExplorer
     /// </summary>
     public class ApiType
     {
-        private Type _type;
-
-        public string Assembly => _type.Assembly.GetName().Name;
-        public string Namespace => _type.Namespace;
-        public string Name => _type.Name;
-        public string BaseType => _type.BaseType?.Name ?? "";
+        public string Assembly => this.Type.Assembly.GetName().Name;
+        public string Namespace => this.Type.Namespace;
+        public string Name => this.Type.Name;
+        public string BaseType => this.Type.BaseType?.Name ?? "";
 
         public bool IsEnum { get; }
         public bool IsInterface { get; }
@@ -34,12 +33,16 @@ namespace Kavics.ApiExplorer
 
         public bool IsContentHandler { get; }
 
+        public Type Type { get; }
+        public ApiType Parent { get; set; }
+        public List<ApiType> Children { get; } = new List<ApiType>();
+
         private static BindingFlags _bindingFlagsForAllMembers =
             BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         public ApiType(Type type, bool withInternalMembers)
         {
-            _type = type;
+            Type = type;
 
             IsEnum = type.IsEnum;
             IsInterface = type.IsInterface;

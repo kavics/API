@@ -1,5 +1,6 @@
 ﻿using SenseNet.Tools.CommandLineArguments;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -36,6 +37,8 @@ namespace Kavics.ApiExplorer.GetApi
             if (!exit)
                 Run(arguments);
 
+            Process.Start(arguments.TargetFile);
+
             if (Debugger.IsAttached)
             {
                 Console.Write("Press <enter> to exit...");
@@ -70,6 +73,14 @@ namespace Kavics.ApiExplorer.GetApi
                 writer.WriteLine();
 
                 Print(writer, relevantTypes, true);
+
+                writer.WriteLine();
+                writer.WriteLine("=================================================================================================");
+                writer.WriteLine();
+                writer.WriteLine("TYPE TREE");
+                writer.WriteLine();
+
+                PrintTree(writer, relevantTypes);
             }
         }
 
@@ -128,7 +139,6 @@ namespace Kavics.ApiExplorer.GetApi
             }
 
         }
-
         private static void WriteMembers(TextWriter writer, ApiType t)
         {
             foreach (var item in t.Fields)
@@ -146,11 +156,37 @@ namespace Kavics.ApiExplorer.GetApi
             foreach (var item in t.OtherMembers)
                 writer.WriteLine("\t\t\t\t\t\t" + item);
         }
-    }
 
-    public struct asdf
-    {
-        internal int qwer;
-        internal int YXCV { get; }
+        private static void PrintTree(TextWriter writer, ApiType[] types)
+        {
+            var roots = DiscoverTree(types);
+            var nameSpaceWidth = types.Max(t => t.Namespace?.Length ?? 0) + 2;
+            foreach (var root in roots)
+                PrintTreeNode(writer, root, nameSpaceWidth, "");
+        }
+
+        private static void PrintTreeNode(TextWriter writer, ApiType node, int nameSpaceWidth, string indent)
+        {
+            writer.Write((node.Namespace ?? " ").PadRight(nameSpaceWidth));
+            writer.Write("| ");
+            writer.Write(indent);
+            writer.WriteLine(node.Name);
+            var childIndent = indent + "  ";
+            foreach (var child in node.Children)
+                PrintTreeNode(writer, child, nameSpaceWidth, childIndent);
+        }
+
+        private static IEnumerable<ApiType> DiscoverTree(ApiType[] apiTypes)
+        {
+            foreach (var apiType in apiTypes)
+            {
+                var parentType = apiType.Type.BaseType;
+                apiType.Parent = apiTypes.FirstOrDefault(t => t.Type == parentType);
+                apiType.Parent?.Children.Add(apiType);
+            }
+
+            var roots = apiTypes.Where(t => t.Parent == null).ToArray();
+            return roots;
+        }
     }
 }
