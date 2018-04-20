@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using Kavics.ApiExplorer;
+using System.Text.RegularExpressions;
 
 namespace Tests
 {
@@ -12,7 +13,7 @@ namespace Tests
         public void Api_Types_Public()
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
-            var filter = new Filter { Namespace = ".*Tests.TestClasses1.*" };
+            var filter = new Filter { NamespaceFilter = new Regex(".*Tests.TestClasses1.*", RegexOptions.IgnoreCase) };
             var types = new Api(binPath, filter).GetTypes();
 
             var expected = "IPub, PubAC, PubC, PubEnum, PubNCofPub, PubSeC, PubStC, PubStruct";
@@ -24,7 +25,7 @@ namespace Tests
         public void Api_Types_All()
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
-            var filter = new Filter { WithInternals = true, Namespace = ".*Tests.TestClasses1.*" };
+            var filter = new Filter { WithInternals = true, NamespaceFilter = new Regex(".*Tests.TestClasses1.*", RegexOptions.IgnoreCase) };
             var types = new Api(binPath, filter).GetTypes();
 
             var expected = "IInt, IntAC, IntC, IntEnum, IntNCofInt, IntNCofPub, IntSeC, IntStC, IntStruct, IPub, " +
@@ -38,7 +39,7 @@ namespace Tests
         public void Api_Members_Public()
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
-            var filter = new Filter { Namespace = ".*.TestClasses2.*" };
+            var filter = new Filter { NamespaceFilter = new Regex(".*.TestClasses2.*", RegexOptions.IgnoreCase) };
             var types = new Api(binPath, filter).GetTypes();
 
             var expectedFields = "_protectedField, _protectedInternalField, _publicField";
@@ -57,7 +58,7 @@ namespace Tests
         public void Api_Members_All()
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
-            var filter = new Filter { Namespace = ".*.TestClasses2.*", WithInternalMembers = true };
+            var filter = new Filter { NamespaceFilter = new Regex(".*.TestClasses2.*", RegexOptions.IgnoreCase), WithInternalMembers = true };
             var types = new Api(binPath, filter).GetTypes();
 
             var expectedFields = "_internalField, _privateField, _protectedField, _protectedInternalField, _publicField";

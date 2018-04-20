@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace Kavics.ApiExplorer
 {
@@ -26,9 +25,7 @@ namespace Kavics.ApiExplorer
                 foreach (var path in Directory.GetFiles(BinPath, "*.dll").Union(Directory.GetFiles(BinPath, "*.exe")))
                     Assembly.LoadFrom(path);
 
-                Regex namespaceRegex = null;
-                if(_filter.Namespace != null)
-                    namespaceRegex = new Regex(_filter.Namespace, RegexOptions.IgnoreCase);
+                var namespaceRegex = _filter.NamespaceFilter;
 
                 var asms = AppDomain.CurrentDomain.GetAssemblies();
                 var relevantAsms = asms.Where(a => Path.GetDirectoryName(a.Location) == BinPath).ToArray();

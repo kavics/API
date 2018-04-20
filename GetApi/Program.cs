@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Kavics.ApiExplorer.GetApi
 {
@@ -33,6 +34,26 @@ namespace Kavics.ApiExplorer.GetApi
                 Console.WriteLine(parser.GetUsage());
                 exit = true;
             }
+            catch (TargetInvocationException e)
+            {
+                parser = ArgumentParser.Parse(new[] { "?" }, arguments);
+                parser.GetAppNameAndVersion();
+                Console.WriteLine(e.InnerException.Message);
+                Console.WriteLine();
+                Console.WriteLine("Usage:");
+                Console.WriteLine(parser.GetUsage());
+                exit = true;
+            }
+            catch (Exception e)
+            {
+                parser = ArgumentParser.Parse(new[] { "?" }, arguments);
+                parser.GetAppNameAndVersion();
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+                Console.WriteLine("Usage:");
+                Console.WriteLine(parser.GetUsage());
+                exit = true;
+            }
 
             if (!exit)
             {
@@ -55,7 +76,7 @@ namespace Kavics.ApiExplorer.GetApi
             var binPath = arguments.SourceDirectory;
             var filter = new Filter
             {
-                Namespace = arguments.NamespaceFilter,
+                NamespaceFilter = arguments.NamespaceFilter,
                 WithInternals = arguments.AllInternals,
                 WithInternalMembers = arguments.InternalMembers
             };

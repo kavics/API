@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kavics.ApiExplorer;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Tests
 {
@@ -12,7 +13,7 @@ namespace Tests
         public void Api_OneMember_AbstractMethodIsNotVirtual()
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
-            var filter = new Filter { Namespace = ".*.TestClasses2.*" };
+            var filter = new Filter { NamespaceFilter = new Regex(".*.TestClasses2.*", RegexOptions.IgnoreCase)  };
             var types = new Api(binPath, filter).GetTypes();
 
             var members = types.SelectMany(a => a.Methods, (a, m) => m).Where(m => m.IsAbstract);
@@ -25,7 +26,7 @@ namespace Tests
         public void Api_OneMember_AbstractPropertyIsNotVirtual()
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
-            var filter = new Filter { Namespace = ".*.TestClasses2.*" };
+            var filter = new Filter { NamespaceFilter = new Regex(".*.TestClasses2.*", RegexOptions.IgnoreCase) };
             var types = new Api(binPath, filter).GetTypes();
 
             var members = types.SelectMany(a => a.Properties, (a, m) => m).Where(m => m.IsAbstract);
