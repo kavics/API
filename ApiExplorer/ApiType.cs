@@ -28,7 +28,7 @@ namespace Kavics.ApiExplorer
         public ApiMember[] Methods { get; }
         public ApiMember[] Constructors { get; }
         public ApiMember[] Events { get; }
-        public ApiMember[] NestecClasses { get; }
+        public ApiMember[] NestedClasses { get; }
         public ApiMember[] OtherMembers { get; }
 
         public bool IsContentHandler { get; }
@@ -66,7 +66,7 @@ namespace Kavics.ApiExplorer
             Events = members.Where(m => m.IsEvent).ToArray();
             Constructors = members.Where(m => m.IsConstructor).ToArray();
             Methods = members.Where(m => m.IsMethod).ToArray();
-            NestecClasses = members.Where(m => m.IsNestedClass).ToArray();
+            NestedClasses = members.Where(m => m.IsNestedClass).ToArray();
             OtherMembers = members.Where(m => m.IsOther).ToArray();
 
             var attributes = type.GetCustomAttributes(false);

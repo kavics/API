@@ -35,9 +35,13 @@ namespace Kavics.ApiExplorer.GetApi
             }
 
             if (!exit)
+            {
                 Run(arguments);
-
-            Process.Start(arguments.TargetFile);
+                if (File.Exists(arguments.TargetFile))
+                    Process.Start(arguments.TargetFile);
+                else
+                    Console.Write("Target file does not exist.");
+            }
 
             if (Debugger.IsAttached)
             {
@@ -51,7 +55,7 @@ namespace Kavics.ApiExplorer.GetApi
             var binPath = arguments.SourceDirectory;
             var filter = new Filter
             {
-                Namespace = null,
+                Namespace = arguments.NamespaceFilter,
                 WithInternals = arguments.AllInternals,
                 WithInternalMembers = arguments.InternalMembers
             };
@@ -151,7 +155,7 @@ namespace Kavics.ApiExplorer.GetApi
                 writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.Methods)
                 writer.WriteLine("\t\t\t\t\t\t" + item);
-            foreach (var item in t.NestecClasses)
+            foreach (var item in t.NestedClasses)
                 writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.OtherMembers)
                 writer.WriteLine("\t\t\t\t\t\t" + item);

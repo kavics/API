@@ -39,8 +39,12 @@ namespace Kavics.ApiExplorer.GetApi
 
         [CommandLineArgument(name: "allinternals", required: false, aliases: "i", helpText: "Shows internal classes and members")]
         public bool AllInternals { get; set; }
+
         [CommandLineArgument(name: "internalmembers", required: false, aliases: "im", helpText: "Shows internal members of public classes.")]
         public bool InternalMembers { get; set; }
+
+        [CommandLineArgument(name: "namespace", required: false, aliases: "n,ns", helpText: "Valid regex that filters the namespaces.")]
+        public string NamespaceFilter { get; set; }
 
     }
 }
