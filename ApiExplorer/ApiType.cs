@@ -11,10 +11,15 @@ namespace Kavics.ApiExplorer
     /// </summary>
     public class ApiType
     {
+        public Type Type { get; }
+
         public string Assembly => this.Type.Assembly.GetName().Name;
         public string Namespace => this.Type.Namespace;
-        public string Name => this.Type.Name;
-        public string BaseType => this.Type.BaseType?.Name ?? "";
+
+        private string _name;
+        public string Name => _name ?? (_name = Api.GetTypeName(this.Type));
+        private string _baseType;
+        public string BaseType => _baseType ?? (_baseType = this.Type.BaseType == null ? string.Empty : Api.GetTypeName(this.Type.BaseType));
 
         public bool IsEnum { get; }
         public bool IsInterface { get; }
@@ -33,7 +38,6 @@ namespace Kavics.ApiExplorer
 
         public bool IsContentHandler { get; }
 
-        public Type Type { get; }
         public ApiType Parent { get; set; }
         public List<ApiType> Children { get; } = new List<ApiType>();
 

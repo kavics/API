@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kavics.ApiExplorer;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace Tests
 {
@@ -35,5 +36,16 @@ namespace Tests
             foreach (var member in members)
                 Assert.IsFalse(member.IsVirtual, $"abstract {member.Name} is virtual.");
         }
+
+        [TestMethod]
+        public void Api_TypeName_GenericOutParameter()
+        {
+            var method = this.GetType().GetMethod("TestMethod1");
+            var names = method.GetParameters().Select(p => Api.GetTypeName(p.ParameterType)).ToArray();
+            Assert.AreEqual("List<string>", names[0]);
+            Assert.AreEqual("List<string>", names[1]);
+        }
+
+        public void TestMethod1(List<string> prm, out List<string> outPrm) { outPrm = null; }
     }
 }
