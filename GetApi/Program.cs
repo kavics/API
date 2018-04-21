@@ -26,32 +26,17 @@ namespace Kavics.ApiExplorer.GetApi
             }
             catch (ParsingException e)
             {
-                parser = ArgumentParser.Parse(new[] { "?" }, arguments);
-                parser.GetAppNameAndVersion();
-                Console.WriteLine(e.FormattedMessage);
-                Console.WriteLine();
-                Console.WriteLine("Usage:");
-                Console.WriteLine(parser.GetUsage());
+                PrintError(e.FormattedMessage, arguments);
                 exit = true;
             }
             catch (TargetInvocationException e)
             {
-                parser = ArgumentParser.Parse(new[] { "?" }, arguments);
-                parser.GetAppNameAndVersion();
-                Console.WriteLine(e.InnerException.Message);
-                Console.WriteLine();
-                Console.WriteLine("Usage:");
-                Console.WriteLine(parser.GetUsage());
+                PrintError(e.InnerException.Message, arguments);
                 exit = true;
             }
             catch (Exception e)
             {
-                parser = ArgumentParser.Parse(new[] { "?" }, arguments);
-                parser.GetAppNameAndVersion();
-                Console.WriteLine(e.Message);
-                Console.WriteLine();
-                Console.WriteLine("Usage:");
-                Console.WriteLine(parser.GetUsage());
+                PrintError(e.Message, arguments);
                 exit = true;
             }
 
@@ -70,6 +55,15 @@ namespace Kavics.ApiExplorer.GetApi
                 Console.ReadLine();
             }
         }
+        private static void PrintError(string message, Arguments arguments)
+        {
+            var parser = ArgumentParser.Parse(new[] { "?" }, arguments);
+            parser.GetAppNameAndVersion();
+            Console.WriteLine(message);
+            Console.WriteLine();
+            Console.WriteLine("Usage:");
+            Console.WriteLine(parser.GetUsage());
+        }
 
         private static void Run(Arguments arguments)
         {
@@ -77,15 +71,14 @@ namespace Kavics.ApiExplorer.GetApi
             var filter = new Filter
             {
                 NamespaceFilter = arguments.NamespaceFilter,
+                ContentHandlerFilter = arguments.ContentHandlerFilter,
                 WithInternals = arguments.AllInternals,
                 WithInternalMembers = arguments.InternalMembers
             };
             var types = new Api(binPath, filter).GetTypes();
 
-            //var relevantTypes = types.Where(t => t.Namespace.Contains(".Search") && !t.Namespace.Contains("Tests")).ToArray();
             //var relevantTypes = types.Where(t => t.IsContentHandler).ToArray();
-            //var relevantTypes = types.Where(t => t.Namespace.StartsWith("SenseNet.ContentRepository.Storage.Data") || t.Name.Contains("DataProvider")).ToArray();
-            var relevantTypes = types; //.Where(t => t.Name == "DataProvider" || t.BaseType == "DataProvider").ToArray();
+            var relevantTypes = types;
 
             using (var writer = new StreamWriter(arguments.TargetFile))
             {
@@ -189,7 +182,6 @@ namespace Kavics.ApiExplorer.GetApi
             foreach (var root in roots)
                 PrintTreeNode(writer, root, nameSpaceWidth, "");
         }
-
         private static void PrintTreeNode(TextWriter writer, ApiType node, int nameSpaceWidth, string indent)
         {
             writer.Write((node.Namespace ?? " ").PadRight(nameSpaceWidth));
@@ -200,7 +192,6 @@ namespace Kavics.ApiExplorer.GetApi
             foreach (var child in node.Children)
                 PrintTreeNode(writer, child, nameSpaceWidth, childIndent);
         }
-
         private static IEnumerable<ApiType> DiscoverTree(ApiType[] apiTypes)
         {
             foreach (var apiType in apiTypes)

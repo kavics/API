@@ -31,14 +31,24 @@ namespace Kavics.ApiExplorer
                 var relevantAsms = asms.Where(a => Path.GetDirectoryName(a.Location) == BinPath).ToArray();
                 var types = relevantAsms
                     .SelectMany(a => _filter.WithInternals ? a.GetTypes() : a.GetExportedTypes(), (a, t) => t);
-                //.Where(t => !t.Name.StartsWith("<")) // skip auto implementations e.g. "<>c__DisplayClass29_0"
+
+                // skip auto implementations e.g. "<>c__DisplayClass29_0"
+                types = types.Where(t => !t.Name.StartsWith("<"));
+
                 if (namespaceRegex != null)
                     types = types.Where(x => namespaceRegex.IsMatch(x.Namespace ?? ""));
+
                 var apiTypes = types
-                    .Select(t => new ApiType(t, _filter.WithInternalMembers))
+                    .Select(t => new ApiType(t, _filter.WithInternalMembers));
+
+                if (_filter.ContentHandlerFilter)
+                    apiTypes = apiTypes.Where(t => t.IsContentHandler);
+
+                apiTypes = apiTypes
                     .OrderBy(a => a.Assembly)
                     .ThenBy(a => a.Namespace)
                     .ThenBy(a => a.Name);
+
                 _types = apiTypes.ToArray();
             }
             return _types;

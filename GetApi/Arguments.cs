@@ -43,6 +43,9 @@ namespace Kavics.ApiExplorer.GetApi
         [CommandLineArgument(name: "internalmembers", required: false, aliases: "im", helpText: "Shows internal members of public classes.")]
         public bool InternalMembers { get; set; }
 
+        [CommandLineArgument(name: "contenthandler", required: false, aliases: "ch", helpText: "Shows only ContentHandler classes of the sensenet.")]
+        public bool ContentHandlerFilter { get; set; }
+
         private string _namespaceFilterArg;
         [CommandLineArgument(name: "namespace", required: false, aliases: "n,ns", helpText: "Valid regex that filters the namespaces. For example: \".*sensenet..*\"")]
         private string NamespaceFilterArg
