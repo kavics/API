@@ -48,11 +48,23 @@ namespace Kavics.ApiExplorer.GetApi
 
             if (!exit)
             {
-                Run(arguments, appNameAndVersion);
-                if (File.Exists(arguments.TargetFile))
-                    Process.Start(arguments.TargetFile);
-                else
-                    Console.Write("Target file does not exist.");
+                try
+                {
+
+                    Run(arguments, appNameAndVersion);
+                    if (File.Exists(arguments.TargetFile))
+                        Process.Start(arguments.TargetFile);
+                    else
+                        Console.Write("Target file does not exist.");
+                }
+                catch (TargetInvocationException e)
+                {
+                    PrintError(e.InnerException.Message, arguments);
+                }
+                catch (Exception e)
+                {
+                    PrintError(e.Message, arguments);
+                }
             }
 
             if (Debugger.IsAttached)
@@ -64,7 +76,6 @@ namespace Kavics.ApiExplorer.GetApi
         private static void PrintError(string message, Arguments arguments)
         {
             var parser = ArgumentParser.Parse(new[] { "?" }, arguments);
-            //parser.GetAppNameAndVersion();
             Console.WriteLine(message);
             Console.WriteLine();
             Console.WriteLine("Usage:");
@@ -74,6 +85,9 @@ namespace Kavics.ApiExplorer.GetApi
         private static void Run(Arguments arguments, string appNameAndVersion)
         {
             var binPath = arguments.SourceDirectory;
+            if (!Directory.Exists(binPath))
+                throw new Exception("Source directory does not exist.");
+
             var filter = new Filter
             {
                 NamespaceFilter = arguments.NamespaceFilter,

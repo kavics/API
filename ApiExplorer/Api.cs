@@ -22,7 +22,11 @@ namespace Kavics.ApiExplorer
         {
             if (_types == null)
             {
-                foreach (var path in Directory.GetFiles(BinPath, "*.dll").Union(Directory.GetFiles(BinPath, "*.exe")))
+                var assemblyPaths = Directory.GetFiles(BinPath, "*.dll").Union(Directory.GetFiles(BinPath, "*.exe")).ToArray();
+                if (assemblyPaths.Length == 0)
+                    throw new Exception("Source directory does not contain any dll or exe file.");
+
+                foreach (var path in assemblyPaths)
                     Assembly.LoadFrom(path);
 
                 var namespaceRegex = _filter.NamespaceFilter;
