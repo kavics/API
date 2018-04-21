@@ -15,6 +15,7 @@ namespace Kavics.ApiExplorer.GetApi
             var exit = false;
             var arguments = new Arguments();
             ArgumentParser parser;
+            string appNameAndVersion = null;
             try
             {
                 parser = ArgumentParser.Parse(args, arguments);
@@ -23,6 +24,7 @@ namespace Kavics.ApiExplorer.GetApi
                     Console.WriteLine(parser.GetHelpText());
                     exit = true;
                 }
+                appNameAndVersion = parser.GetAppNameAndVersion();
             }
             catch (ParsingException e)
             {
@@ -42,7 +44,7 @@ namespace Kavics.ApiExplorer.GetApi
 
             if (!exit)
             {
-                Run(arguments);
+                Run(arguments, appNameAndVersion);
                 if (File.Exists(arguments.TargetFile))
                     Process.Start(arguments.TargetFile);
                 else
@@ -58,14 +60,14 @@ namespace Kavics.ApiExplorer.GetApi
         private static void PrintError(string message, Arguments arguments)
         {
             var parser = ArgumentParser.Parse(new[] { "?" }, arguments);
-            parser.GetAppNameAndVersion();
+            //parser.GetAppNameAndVersion();
             Console.WriteLine(message);
             Console.WriteLine();
             Console.WriteLine("Usage:");
             Console.WriteLine(parser.GetUsage());
         }
 
-        private static void Run(Arguments arguments)
+        private static void Run(Arguments arguments, string appNameAndVersion)
         {
             var binPath = arguments.SourceDirectory;
             var filter = new Filter
@@ -75,7 +77,16 @@ namespace Kavics.ApiExplorer.GetApi
                 WithInternals = arguments.AllInternals,
                 WithInternalMembers = arguments.InternalMembers
             };
+
+            Console.WriteLine(appNameAndVersion);
+
+            Console.WriteLine($"Discovering types from {binPath} ...");
+            PrintFilters(arguments);
+
             var types = new Api(binPath, filter).GetTypes();
+
+            Console.WriteLine($"{types.Length} types found.");
+            Console.WriteLine($"Writing the output file: {arguments.TargetFile} ...");
 
             //var relevantTypes = types.Where(t => t.IsContentHandler).ToArray();
             var relevantTypes = types;
@@ -99,6 +110,23 @@ namespace Kavics.ApiExplorer.GetApi
                 writer.WriteLine();
 
                 PrintTree(writer, relevantTypes);
+            }
+            Console.WriteLine("Finished.");
+            Console.WriteLine($"Opening {arguments.TargetFile}.");
+            Console.WriteLine("Bye.");
+        }
+
+        private static void PrintFilters(Arguments arguments)
+        {
+            Console.WriteLine($"Filters:");
+            if (arguments.NamespaceFilter == null && !arguments.ContentHandlerFilter)
+                Console.WriteLine($"  Filters are not applied.");
+            else
+            {
+                if (arguments.NamespaceFilter != null)
+                    Console.WriteLine($"  Namespace filter: {arguments.NamespaceFilterArg}");
+                if (arguments.ContentHandlerFilter)
+                    Console.WriteLine($"  Only ContentHandlers are processed.");
             }
         }
 

@@ -183,7 +183,6 @@ namespace Kavics.ApiExplorer
         }
         private static string GetSimpleName(string name)
         {
-            float x;
             switch (name)
             {
                 default: return name;

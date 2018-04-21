@@ -48,7 +48,7 @@ namespace Kavics.ApiExplorer.GetApi
 
         private string _namespaceFilterArg;
         [CommandLineArgument(name: "namespace", required: false, aliases: "n,ns", helpText: "Valid regex that filters the namespaces. For example: \".*sensenet..*\"")]
-        private string NamespaceFilterArg
+        internal string NamespaceFilterArg
         {
             get => _namespaceFilterArg;
             set
