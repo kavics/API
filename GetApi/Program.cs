@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Kavics.ApiExplorer.GetApi
 {
@@ -25,19 +26,28 @@ namespace Kavics.ApiExplorer.GetApi
             }
             catch (ParsingException e)
             {
-                parser = ArgumentParser.Parse(new[] { "?" }, arguments);
-                parser.GetAppNameAndVersion();
-                Console.WriteLine(e.FormattedMessage);
-                Console.WriteLine();
-                Console.WriteLine("Usage:");
-                Console.WriteLine(parser.GetUsage());
+                PrintError(e.FormattedMessage, arguments);
+                exit = true;
+            }
+            catch (TargetInvocationException e)
+            {
+                PrintError(e.InnerException.Message, arguments);
+                exit = true;
+            }
+            catch (Exception e)
+            {
+                PrintError(e.Message, arguments);
                 exit = true;
             }
 
             if (!exit)
+            {
                 Run(arguments);
-
-            Process.Start(arguments.TargetFile);
+                if (File.Exists(arguments.TargetFile))
+                    Process.Start(arguments.TargetFile);
+                else
+                    Console.Write("Target file does not exist.");
+            }
 
             if (Debugger.IsAttached)
             {
@@ -45,22 +55,30 @@ namespace Kavics.ApiExplorer.GetApi
                 Console.ReadLine();
             }
         }
+        private static void PrintError(string message, Arguments arguments)
+        {
+            var parser = ArgumentParser.Parse(new[] { "?" }, arguments);
+            parser.GetAppNameAndVersion();
+            Console.WriteLine(message);
+            Console.WriteLine();
+            Console.WriteLine("Usage:");
+            Console.WriteLine(parser.GetUsage());
+        }
 
         private static void Run(Arguments arguments)
         {
             var binPath = arguments.SourceDirectory;
             var filter = new Filter
             {
-                Namespace = null,
+                NamespaceFilter = arguments.NamespaceFilter,
+                ContentHandlerFilter = arguments.ContentHandlerFilter,
                 WithInternals = arguments.AllInternals,
                 WithInternalMembers = arguments.InternalMembers
             };
             var types = new Api(binPath, filter).GetTypes();
 
-            //var relevantTypes = types.Where(t => t.Namespace.Contains(".Search") && !t.Namespace.Contains("Tests")).ToArray();
             //var relevantTypes = types.Where(t => t.IsContentHandler).ToArray();
-            //var relevantTypes = types.Where(t => t.Namespace.StartsWith("SenseNet.ContentRepository.Storage.Data") || t.Name.Contains("DataProvider")).ToArray();
-            var relevantTypes = types; //.Where(t => t.Name == "DataProvider" || t.BaseType == "DataProvider").ToArray();
+            var relevantTypes = types;
 
             using (var writer = new StreamWriter(arguments.TargetFile))
             {
@@ -151,7 +169,7 @@ namespace Kavics.ApiExplorer.GetApi
                 writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.Methods)
                 writer.WriteLine("\t\t\t\t\t\t" + item);
-            foreach (var item in t.NestecClasses)
+            foreach (var item in t.NestedClasses)
                 writer.WriteLine("\t\t\t\t\t\t" + item);
             foreach (var item in t.OtherMembers)
                 writer.WriteLine("\t\t\t\t\t\t" + item);
@@ -164,7 +182,6 @@ namespace Kavics.ApiExplorer.GetApi
             foreach (var root in roots)
                 PrintTreeNode(writer, root, nameSpaceWidth, "");
         }
-
         private static void PrintTreeNode(TextWriter writer, ApiType node, int nameSpaceWidth, string indent)
         {
             writer.Write((node.Namespace ?? " ").PadRight(nameSpaceWidth));
@@ -175,7 +192,6 @@ namespace Kavics.ApiExplorer.GetApi
             foreach (var child in node.Children)
                 PrintTreeNode(writer, child, nameSpaceWidth, childIndent);
         }
-
         private static IEnumerable<ApiType> DiscoverTree(ApiType[] apiTypes)
         {
             foreach (var apiType in apiTypes)

@@ -1,4 +1,6 @@
-﻿namespace Kavics.ApiExplorer
+﻿using System.Text.RegularExpressions;
+
+namespace Kavics.ApiExplorer
 {
     /// <summary>
     /// Filters the types and members when assemlies are scanned.
@@ -7,9 +9,14 @@
     {
         /// <summary>
         /// Regex for filter namespace of a type. The typelist will contain only matching types.
-        /// For example ".*Kavics.*" means types that's namespace contains the "SpaceBender".
+        /// For example ".*Kavics.*" means types that's namespace contains the "Kavics".
         /// </summary>
-        public string Namespace { get; set; }
+        public Regex NamespaceFilter { get; set; }
+
+        /// <summary>
+        /// The type list will contain only ContentHandler classes of the sensenet.
+        /// </summary>
+        public bool ContentHandlerFilter { get; set; }
 
         /// <summary>
         /// Adds internal types to the type list.
