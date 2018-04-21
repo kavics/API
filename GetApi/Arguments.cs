@@ -8,17 +8,7 @@ namespace Kavics.ApiExplorer.GetApi
     internal class Arguments
     {
         [NoNameOption(order: 0, required: true, nameInHelp: "source", helpText: "Path of the directory containing assemblies.")]
-        private string SourceDirectoryArg { get; set; }
-        private string _sourceDirectory;
-        public string SourceDirectory
-        {
-            get
-            {
-                if (_sourceDirectory == null)
-                    _sourceDirectory = Path.GetFullPath(SourceDirectoryArg ?? AppDomain.CurrentDomain.BaseDirectory);
-                return _sourceDirectory;
-            }
-        }
+        public string SourceDirectory { get; set; }
 
         [NoNameOption(order: 1, required: false, nameInHelp: "target", helpText: "Path of output file. Default: <source\\api.txt>")]
         private string TargetFileArg { get; set; }

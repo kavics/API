@@ -19,7 +19,11 @@ namespace Kavics.ApiExplorer.GetApi
             try
             {
                 parser = ArgumentParser.Parse(args, arguments);
-                if (parser.IsHelp)
+                if (arguments.SourceDirectory == null)
+                {
+                    throw new Exception("Missing source.");
+                }
+                else if (parser.IsHelp)
                 {
                     Console.WriteLine(parser.GetHelpText());
                     exit = true;
