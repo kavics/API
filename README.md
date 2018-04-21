@@ -42,5 +42,6 @@ Visualizes the inheritance tree in two columns
 - namespace (fixed width, aligned left)
 - type name (indent by inheritance level)
 
-## NOTES
-Known issue: the type tree cannot draw the real parent-child relations if any filter hides elements of the inheritance chain.
+## KNOWN ISSUES
+1. The type tree cannot draw the real parent-child relations if any filter hides elements of the inheritance chain.
+2. Some method parameter is not printed well if it is out or ref param.
