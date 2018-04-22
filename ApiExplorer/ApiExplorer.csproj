@@ -7,8 +7,8 @@
     <ProjectGuid>{F6BF6F13-C06F-4538-B1CF-2F5F9A4159DF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SpaceBender.ApiExplorer</RootNamespace>
-    <AssemblyName>SpaceBender.ApiExplorer</AssemblyName>
+    <RootNamespace>Kavics.ApiExplorer</RootNamespace>
+    <AssemblyName>Kavics.ApiExplorer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,8 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiMember.cs" />
-    <Compile Include="ApiReader.cs" />
+    <Compile Include="Api.cs" />
     <Compile Include="ApiType.cs" />
+    <Compile Include="Filter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

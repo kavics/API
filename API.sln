@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiExplorer", "ApiExplorer\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetApi", "GetApi\GetApi.csproj", "{7989073B-9AF9-4943-9B2C-28DD167A0CBC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{CDC13B47-D1C0-4FDF-82B8-21A22C33005E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7989073B-9AF9-4943-9B2C-28DD167A0CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7989073B-9AF9-4943-9B2C-28DD167A0CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7989073B-9AF9-4943-9B2C-28DD167A0CBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDC13B47-D1C0-4FDF-82B8-21A22C33005E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDC13B47-D1C0-4FDF-82B8-21A22C33005E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDC13B47-D1C0-4FDF-82B8-21A22C33005E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDC13B47-D1C0-4FDF-82B8-21A22C33005E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
