@@ -12,6 +12,8 @@ namespace Kavics.ApiExplorer.GetApi
     {
         static void Main(string[] args)
         {
+args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
+
             var exit = false;
             var arguments = new Arguments();
             ArgumentParser parser;
@@ -101,7 +103,10 @@ namespace Kavics.ApiExplorer.GetApi
             Console.WriteLine($"Discovering types from {binPath} ...");
             PrintFilters(arguments);
 
-            var types = new Api(binPath, filter).GetTypes();
+            var types = new Api(binPath, filter).GetTypes(out var errors);
+
+            if (errors.Length > 0)
+                Console.WriteLine("Errors: " + errors.Length);
 
             Console.WriteLine($"{types.Length} types found.");
             Console.WriteLine($"Writing the output file: {arguments.TargetFile} ...");
@@ -111,6 +116,10 @@ namespace Kavics.ApiExplorer.GetApi
 
             using (var writer = new StreamWriter(arguments.TargetFile))
             {
+                if (errors.Length > 0)
+                    foreach (var error in errors)
+                        writer.WriteLine(error);
+
                 Print(writer, relevantTypes, false);
 
                 writer.WriteLine();
