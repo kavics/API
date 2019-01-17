@@ -8,6 +8,7 @@ namespace Kavics.ApiExplorer
 {
     public class Api
     {
+        private string[] _errors;
         private ApiType[] _types;
         private Filter _filter;
 
@@ -20,7 +21,7 @@ namespace Kavics.ApiExplorer
         }
 
         //private static Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
-        public ApiType[] GetTypes()
+        public ApiType[] GetTypes_OLD()
         {
             if (_types == null)
             {
@@ -71,6 +72,72 @@ namespace Kavics.ApiExplorer
 
                 _types = apiTypes.ToArray();
             }
+            return _types;
+        }
+        public ApiType[] GetTypes(out string[] errors)
+        {
+            var errorMessages = new List<string>();
+            if (_types == null)
+            {
+                var assemblyPaths = Directory.GetFiles(BinPath, "*.dll").Union(Directory.GetFiles(BinPath, "*.exe")).ToArray();
+                if (assemblyPaths.Length == 0)
+                    throw new Exception("Source directory does not contain any dll or exe file.");
+
+                //foreach (var path in assemblyPaths)
+                //{
+                //    var assembly = Assembly.LoadFrom(path);
+                //    foreach(var type in assembly.GetTypes())
+                //    {
+                //        if (type.Name.StartsWith("<") || type.FullName.StartsWith("<"))
+                //            continue;
+                //        if(_typeCache.ContainsKey(type.FullName))
+                //        {
+                //            int q = 1;
+                //        }
+                //        _typeCache.Add(type.FullName, type);
+                //    }
+                //}
+                foreach (var path in assemblyPaths)
+                    Assembly.LoadFrom(path);
+
+                var namespaceRegex = _filter.NamespaceFilter;
+
+                var apiTypes = new List<ApiType>();
+                var asms = AppDomain.CurrentDomain.GetAssemblies();
+
+                foreach (var asm in asms)
+                {
+                    if (Path.GetDirectoryName(asm.Location) == BinPath)
+                    {
+                        Type[] types;
+                        try
+                        {
+                            types = _filter.WithInternals ? asm.GetTypes() : asm.GetExportedTypes();
+                            foreach (var type in types)
+                                if (!type.Name.StartsWith("<"))
+                                    if (namespaceRegex == null || namespaceRegex.IsMatch(type.Namespace ?? ""))
+                                        apiTypes.Add(new ApiType(type, _filter.WithInternalMembers));
+                        }
+                        catch(Exception e)
+                        {
+                            errorMessages.Add($"Error during processing assembly {asm.FullName}: {e.Message}");
+                        }
+                    }
+                }
+
+                var filteredApiTypes = _filter.ContentHandlerFilter
+                    ? apiTypes.Where(t => t.IsContentHandler)
+                    : apiTypes;
+
+                filteredApiTypes = filteredApiTypes
+                    .OrderBy(a => a.Assembly)
+                    .ThenBy(a => a.Namespace)
+                    .ThenBy(a => a.Name);
+
+                _types = filteredApiTypes.ToArray();
+                _errors = errorMessages.ToArray();
+            }
+            errors = _errors;
             return _types;
         }
 

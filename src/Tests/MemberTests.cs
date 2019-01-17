@@ -15,7 +15,7 @@ namespace Tests
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
             var filter = new Filter { NamespaceFilter = new Regex(".*.TestClasses2.*", RegexOptions.IgnoreCase)  };
-            var types = new Api(binPath, filter).GetTypes();
+            var types = new Api(binPath, filter).GetTypes(out var _);
 
             var members = types.SelectMany(a => a.Methods, (a, m) => m).Where(m => m.IsAbstract);
             if (!members.Any())
@@ -28,7 +28,7 @@ namespace Tests
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
             var filter = new Filter { NamespaceFilter = new Regex(".*.TestClasses2.*", RegexOptions.IgnoreCase) };
-            var types = new Api(binPath, filter).GetTypes();
+            var types = new Api(binPath, filter).GetTypes(out var _);
 
             var members = types.SelectMany(a => a.Properties, (a, m) => m).Where(m => m.IsAbstract);
             if (!members.Any())
