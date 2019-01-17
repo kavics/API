@@ -14,7 +14,7 @@ namespace Tests
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
             var filter = new Filter { NamespaceFilter = new Regex(".*Tests.TestClasses1.*", RegexOptions.IgnoreCase) };
-            var types = new Api(binPath, filter).GetTypes();
+            var types = new Api(binPath, filter).GetTypes(out var _);
 
             var expected = "IPub, PubAC, PubC, PubEnum, PubNCofPub, PubSeC, PubStC, PubStruct";
             var actual = string.Join(", ", types.Select(t => t.Name).OrderBy(s => s));
@@ -26,7 +26,7 @@ namespace Tests
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
             var filter = new Filter { WithInternals = true, NamespaceFilter = new Regex(".*Tests.TestClasses1.*", RegexOptions.IgnoreCase) };
-            var types = new Api(binPath, filter).GetTypes();
+            var types = new Api(binPath, filter).GetTypes(out var _);
 
             var expected = "IInt, IntAC, IntC, IntEnum, IntNCofInt, IntNCofPub, IntSeC, IntStC, IntStruct, IPub, " +
                            "PriNCofInt, PriNCofPub, " +
@@ -40,7 +40,7 @@ namespace Tests
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
             var filter = new Filter { NamespaceFilter = new Regex(".*.TestClasses2.*", RegexOptions.IgnoreCase) };
-            var types = new Api(binPath, filter).GetTypes();
+            var types = new Api(binPath, filter).GetTypes(out var _);
 
             var expectedFields = "_protectedField, _protectedInternalField, _publicField";
             var actualFields = string.Join(", ", types[0].Fields.Select(f => f.Name).OrderBy(s => s));
@@ -59,7 +59,7 @@ namespace Tests
         {
             var binPath = AppDomain.CurrentDomain.BaseDirectory;
             var filter = new Filter { NamespaceFilter = new Regex(".*.TestClasses2.*", RegexOptions.IgnoreCase), WithInternalMembers = true };
-            var types = new Api(binPath, filter).GetTypes();
+            var types = new Api(binPath, filter).GetTypes(out var _);
 
             var expectedFields = "_internalField, _privateField, _protectedField, _protectedInternalField, _publicField";
             var actualFields = string.Join(", ", types[0].Fields.Select(f => f.Name).OrderBy(s => s));
