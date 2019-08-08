@@ -12,8 +12,6 @@ namespace Kavics.ApiExplorer.GetApi
     {
         static void Main(string[] args)
         {
-args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
-
             var exit = false;
             var arguments = new Arguments();
             ArgumentParser parser;
