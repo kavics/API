@@ -12,7 +12,7 @@ namespace Kavics.ApiExplorer.GetApi
     {
         static void Main(string[] args)
         {
-args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet"};
 
             var exit = false;
             var arguments = new Arguments();
