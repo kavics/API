@@ -12,7 +12,7 @@ namespace Kavics.ApiExplorer.GetApi
     {
         static void Main(string[] args)
         {
-//args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
+args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet"};
 
             var exit = false;
             var arguments = new Arguments();
@@ -133,6 +133,22 @@ namespace Kavics.ApiExplorer.GetApi
                 writer.WriteLine();
                 writer.WriteLine("=================================================================================================");
                 writer.WriteLine();
+                writer.WriteLine("ODATA FUNCTIONS");
+                writer.WriteLine();
+
+                PrintOdataOperations(writer, relevantTypes, false);
+
+                writer.WriteLine();
+                writer.WriteLine("=================================================================================================");
+                writer.WriteLine();
+                writer.WriteLine("ODATA ACTIONS");
+                writer.WriteLine();
+
+                PrintOdataOperations(writer, relevantTypes, true);
+
+                writer.WriteLine();
+                writer.WriteLine("=================================================================================================");
+                writer.WriteLine();
                 writer.WriteLine("TYPE TREE");
                 writer.WriteLine();
 
@@ -211,6 +227,21 @@ namespace Kavics.ApiExplorer.GetApi
                     WriteMembers(writer, t);
             }
 
+        }
+        private static void PrintOdataOperations(TextWriter writer, ApiType[] relevantTypes, bool actions)
+        {
+            foreach (var t in relevantTypes.Where(t => t.IsClass))
+            {
+                var methods = actions
+                    ? t.Methods.Where(m => m.IsOdataAction).ToArray()
+                    : t.Methods.Where(m => m.IsOdataFunction).ToArray();
+                if (!methods.Any())
+                    continue;
+
+                writer.WriteLine($"{t.Assembly}\t{t.Namespace}\t{t.Name}");
+                foreach (var item in methods)
+                    writer.WriteLine("\t\t\t\t" + item);
+            }
         }
         private static void WriteMembers(TextWriter writer, ApiType t)
         {
