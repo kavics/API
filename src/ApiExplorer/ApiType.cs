@@ -12,12 +12,14 @@ namespace Kavics.ApiExplorer
     public class ApiType
     {
         public Type Type { get; }
-
-        public string Assembly => this.Type.Assembly.GetName().Name;
         public string Namespace => this.Type.Namespace;
+
+        private string _asmName;
+        public string Assembly => _asmName ?? (_asmName = this.Type.Assembly.GetName().Name);
 
         private string _name;
         public string Name => _name ?? (_name = Api.GetTypeName(this.Type));
+
         private string _baseType;
         public string BaseType => _baseType ?? (_baseType = this.Type.BaseType == null ? string.Empty : Api.GetTypeName(this.Type.BaseType));
 

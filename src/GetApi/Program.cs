@@ -12,6 +12,8 @@ namespace Kavics.ApiExplorer.GetApi
     {
         static void Main(string[] args)
         {
+//args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
+
             var exit = false;
             var arguments = new Arguments();
             ArgumentParser parser;
@@ -231,19 +233,22 @@ namespace Kavics.ApiExplorer.GetApi
         private static void PrintTree(TextWriter writer, ApiType[] types)
         {
             var roots = DiscoverTree(types);
+            var assemblyWidth = types.Max(t => t.Assembly?.Length ?? 0) + 2;
             var nameSpaceWidth = types.Max(t => t.Namespace?.Length ?? 0) + 2;
             foreach (var root in roots)
-                PrintTreeNode(writer, root, nameSpaceWidth, "");
+                PrintTreeNode(writer, root, assemblyWidth, nameSpaceWidth, "");
         }
-        private static void PrintTreeNode(TextWriter writer, ApiType node, int nameSpaceWidth, string indent)
+        private static void PrintTreeNode(TextWriter writer, ApiType node, int assemblyWidth, int nameSpaceWidth, string indent)
         {
+            writer.Write((node.Assembly ?? " ").PadRight(assemblyWidth));
+            writer.Write("| ");
             writer.Write((node.Namespace ?? " ").PadRight(nameSpaceWidth));
             writer.Write("| ");
             writer.Write(indent);
             writer.WriteLine(node.Name);
             var childIndent = indent + "  ";
             foreach (var child in node.Children)
-                PrintTreeNode(writer, child, nameSpaceWidth, childIndent);
+                PrintTreeNode(writer, child, assemblyWidth, nameSpaceWidth, childIndent);
         }
         private static IEnumerable<ApiType> DiscoverTree(ApiType[] apiTypes)
         {
