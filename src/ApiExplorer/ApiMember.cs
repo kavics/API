@@ -29,6 +29,9 @@ namespace Kavics.ApiExplorer
         public bool IsFinal { get; private set; }
         public bool IsStatic { get; private set; }
 
+        public bool IsOdataOperation => IsOdataAction || IsOdataFunction;
+        public bool IsOdataAction { get; private set; }
+        public bool IsOdataFunction { get; private set; }
 
 
         private ApiMember(string name, string representation)
@@ -84,6 +87,7 @@ namespace Kavics.ApiExplorer
                     .Select(p => $"{(p.IsOut ? "out " : "")}{Api.GetTypeName(p.ParameterType)} {p.Name}{(p.IsOptional ? " = ?" : "")}")
                     .ToArray();
                 var parameters = string.Join(", ", x);
+                var attrs = methodInfo.GetCustomAttributes().ToArray();
 
                 return new ApiMember(methodInfo.Name, $"{Api.GetTypeName(methodInfo.ReturnType)} {methodInfo.Name} ({parameters})")
                 {
@@ -96,9 +100,11 @@ namespace Kavics.ApiExplorer
                     IsFamilyOrAssembly = methodInfo.IsFamilyOrAssembly,
                     IsPublic = methodInfo.IsPublic,
                     IsAbstract = methodInfo.IsAbstract,
-                    IsVirtual = methodInfo.IsAbstract ? false : methodInfo.IsVirtual,
+                    IsVirtual = !methodInfo.IsAbstract && methodInfo.IsVirtual,
                     IsFinal = methodInfo.IsFinal,
                     IsStatic = methodInfo.IsStatic,
+                    IsOdataAction = attrs.Any(a=>a.GetType().FullName == "SenseNet.ApplicationModel.ODataAction"),
+                    IsOdataFunction = attrs.Any(a => a.GetType().FullName == "SenseNet.ApplicationModel.ODataFunction")
                 };
             }
 
