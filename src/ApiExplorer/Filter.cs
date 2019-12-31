@@ -30,8 +30,8 @@ namespace Kavics.ApiExplorer
         /// </summary>
         public bool WithInternalMembers
         {
-            get { return WithInternals || _withInternalMembers; }
-            set { _withInternalMembers = value; }
+            get => WithInternals || _withInternalMembers;
+            set => _withInternalMembers = value;
         }
     }
 }

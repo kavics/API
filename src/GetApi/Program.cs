@@ -8,34 +8,37 @@ using System.Reflection;
 
 namespace Kavics.ApiExplorer.GetApi
 {
-    class Program
+    internal class Program
     {
         private static readonly string Line =
             "=================================================================================================";
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
 //args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet"};
-//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-contenthandlers"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-ContentHandlers"};
 //args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-odata"};
+//args = new[] {"?"};
 
             var exit = false;
             var arguments = new Arguments();
-            ArgumentParser parser;
             string appNameAndVersion = null;
             try
             {
-                parser = ArgumentParser.Parse(args, arguments);
-                if (arguments.SourceDirectory == null)
-                {
-                    throw new Exception("Missing source.");
-                }
-                else if (parser.IsHelp)
+                var parser = ArgumentParser.Parse(args, arguments);
+                if (parser.IsHelp)
                 {
                     Console.WriteLine(parser.GetHelpText());
                     exit = true;
                 }
-                appNameAndVersion = parser.GetAppNameAndVersion();
+                else
+                {
+                    if (arguments.SourceDirectory == null)
+                    {
+                        throw new Exception("Missing source.");
+                    }
+                    appNameAndVersion = parser.GetAppNameAndVersion();
+                }
             }
             catch (ParsingException e)
             {
@@ -44,7 +47,7 @@ namespace Kavics.ApiExplorer.GetApi
             }
             catch (TargetInvocationException e)
             {
-                PrintError(e.InnerException.Message, arguments);
+                PrintError(e.InnerException?.Message, arguments);
                 exit = true;
             }
             catch (Exception e)
@@ -66,7 +69,7 @@ namespace Kavics.ApiExplorer.GetApi
                 }
                 catch (TargetInvocationException e)
                 {
-                    PrintError(e.InnerException.Message, arguments);
+                    PrintError(e.InnerException?.Message, arguments);
                 }
                 catch (Exception e)
                 {
@@ -175,15 +178,15 @@ namespace Kavics.ApiExplorer.GetApi
 
         private static void PrintFilters(Arguments arguments)
         {
-            Console.WriteLine($"Filters:");
+            Console.WriteLine("Filters:");
             if (arguments.NamespaceFilter == null && !arguments.ContentHandlerFilter)
-                Console.WriteLine($"  Filters are not applied.");
+                Console.WriteLine("  Filters are not applied.");
             else
             {
                 if (arguments.NamespaceFilter != null)
                     Console.WriteLine($"  Namespace filter: {arguments.NamespaceFilterArg}");
                 if (arguments.ContentHandlerFilter)
-                    Console.WriteLine($"  Only ContentHandlers are processed.");
+                    Console.WriteLine("  Only ContentHandlers are processed.");
             }
         }
 
@@ -260,7 +263,7 @@ namespace Kavics.ApiExplorer.GetApi
             }
 
         }
-        private static void PrintOdataOperations(TextWriter writer, ApiType[] relevantTypes, bool actions)
+        private static void PrintOdataOperations(TextWriter writer, IEnumerable<ApiType> relevantTypes, bool actions)
         {
             foreach (var t in relevantTypes.Where(t => t.IsClass))
             {

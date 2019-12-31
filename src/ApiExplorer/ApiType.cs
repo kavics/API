@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+// ReSharper disable ArrangeThisQualifier
 
 namespace Kavics.ApiExplorer
 {
@@ -65,15 +66,15 @@ namespace Kavics.ApiExplorer
                 members = members
                     .Where(m => !m.IsPrivate) // skip private members
                     .Where(m => !(m.IsAssembly && !m.IsFamilyOrAssembly)); // skip internal (and not protected) members
-            members = members.ToArray();
+            var memberArray = members.ToArray();
 
-            Fields = members.Where(m => m.IsField).ToArray();
-            Properties = members.Where(m => m.IsProperty).ToArray();
-            Events = members.Where(m => m.IsEvent).ToArray();
-            Constructors = members.Where(m => m.IsConstructor).ToArray();
-            Methods = members.Where(m => m.IsMethod).ToArray();
-            NestedClasses = members.Where(m => m.IsNestedClass).ToArray();
-            OtherMembers = members.Where(m => m.IsOther).ToArray();
+            Fields = memberArray.Where(m => m.IsField).ToArray();
+            Properties = memberArray.Where(m => m.IsProperty).ToArray();
+            Events = memberArray.Where(m => m.IsEvent).ToArray();
+            Constructors = memberArray.Where(m => m.IsConstructor).ToArray();
+            Methods = memberArray.Where(m => m.IsMethod).ToArray();
+            NestedClasses = memberArray.Where(m => m.IsNestedClass).ToArray();
+            OtherMembers = memberArray.Where(m => m.IsOther).ToArray();
 
             var attributes = type.GetCustomAttributes(false);
             IsContentHandler = attributes.Any(a => a.GetType().Name.StartsWith("ContentHandler"));

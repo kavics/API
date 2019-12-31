@@ -29,7 +29,6 @@ namespace Kavics.ApiExplorer
         public bool IsFinal { get; private set; }
         public bool IsStatic { get; private set; }
 
-        public bool IsOdataOperation => IsOdataAction || IsOdataFunction;
         public bool IsOdataAction { get; private set; }
         public bool IsOdataFunction { get; private set; }
 
@@ -55,7 +54,7 @@ namespace Kavics.ApiExplorer
                     IsFamilyAndAssembly = fieldInfo.IsFamilyAndAssembly,
                     IsFamilyOrAssembly = fieldInfo.IsFamilyOrAssembly,
                     IsPublic = fieldInfo.IsPublic,
-                    IsStatic = fieldInfo.IsStatic,
+                    IsStatic = fieldInfo.IsStatic
                 };
             }
 
@@ -74,9 +73,9 @@ namespace Kavics.ApiExplorer
                     IsFamilyOrAssembly = method.IsFamilyOrAssembly,
                     IsPublic = method.IsPublic,
                     IsAbstract = method.IsAbstract,
-                    IsVirtual = method.IsAbstract ? false : method.IsVirtual,
+                    IsVirtual = !method.IsAbstract && method.IsVirtual,
                     IsFinal = method.IsFinal,
-                    IsStatic = method.IsStatic,
+                    IsStatic = method.IsStatic
                 };
             }
 
@@ -127,9 +126,9 @@ namespace Kavics.ApiExplorer
                     IsFamilyOrAssembly = ctorInfo.IsFamilyOrAssembly,
                     IsPublic = ctorInfo.IsPublic,
                     IsAbstract = ctorInfo.IsAbstract,
-                    IsVirtual = ctorInfo.IsAbstract ? false : ctorInfo.IsVirtual,
+                    IsVirtual = !ctorInfo.IsAbstract && ctorInfo.IsVirtual,
                     IsFinal = ctorInfo.IsFinal,
-                    IsStatic = ctorInfo.IsStatic,
+                    IsStatic = ctorInfo.IsStatic
                 };
             }
 
@@ -148,24 +147,23 @@ namespace Kavics.ApiExplorer
                     IsFamilyOrAssembly = method.IsFamilyOrAssembly,
                     IsPublic = method.IsPublic,
                     IsAbstract = method.IsAbstract,
-                    IsVirtual = method.IsAbstract ? false : method.IsVirtual,
+                    IsVirtual = !method.IsAbstract && method.IsVirtual,
                     IsFinal = method.IsFinal,
-                    IsStatic = method.IsStatic,
+                    IsStatic = method.IsStatic
                 };
             }
 
             var nestedType = member as Type;
             if (nestedType != null)
             {
-                var name = nestedType.Name;
-                var apiType = nestedType.IsInterface ? "interface" : (nestedType.IsClass ? "class" : "struct");
+                var apiType = nestedType.IsInterface ? "interface" : nestedType.IsClass ? "class" : "struct";
                 return new ApiMember(Api.GetTypeName(nestedType), $"{apiType} {Api.GetTypeName(nestedType)}")
                 {
                     IsNestedClass = true,
 
                     IsPublic = nestedType.IsNestedPublic,
                     IsPrivate = nestedType.IsNestedPrivate,
-                    IsAbstract = nestedType.IsAbstract,
+                    IsAbstract = nestedType.IsAbstract
                 };
             }
 
@@ -221,7 +219,6 @@ namespace Kavics.ApiExplorer
         }
         public override string ToString()
         {
-            var x = GetMemberType();
             return $"{GetMemberType()}\t{GetVisibility()} {Representation}";
         }
     }

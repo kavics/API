@@ -3,17 +3,17 @@ Very simple API explorer for the .NET libraries and executables. Reads all assem
 
 ## USAGE
 
-GetApi &lt;source> [target] [-internalmembers:Boolean] [-allinternals:Boolean] [-namespace:String]  [-contenthandlers:Boolean] [?]
+GetApi &lt;source> [target] [-InternalMembers:Boolean] [-AllInternals:Boolean] [-Namespace:String] [-ContentHandlers:Boolean] [-OData:Boolean] [?]
 
 ### Arguments
 
 - **source**: (*required path*) Path of the directory containing assemblies.
 - **target**: (*optional path*) Path of the output file. Default: &lt;source>\api.txt. The recommended file type is any textual file that is associated a windows application because the file will be opened if that is possible after the program execution.
-- **-allinternals**: (*optional switch*) Shows internal classes and members. Alias: i
-- **-internalmembers**: (*optional switch*) Shows internal members of public classes. Alias: im.
-- **-namespace**: (*optional regex*) Valid regex that filters the namespaces (e.g.: -ns ".*sensenet..*"). Alias: n, ns.
-- **-contenthandlers**: (*optional switch*) Shows only ContentHandler classes of the sensenet. Alias: ch
-- **-odata**: (*optional switch*) Shows only OData functions and actions of the sensenet. Alias: o,od
+- **-AllInternals**: (*optional switch*) Shows internal classes and members. Alias: i
+- **-InternalMembers**: (*optional switch*) Shows internal members of public classes. Alias: im.
+- **-Namespace**: (*optional regex*) Valid regex that filters the namespaces (e.g.: -ns ".*sensenet..*"). Alias: n, ns.
+- **-ContentHandlers**: (*optional switch*) Shows only ContentHandler classes of the sensenet. Alias: ch
+- **-OData**: (*optional switch*) Shows only OData functions and actions of the sensenet. Alias: o,od
 - **help**: [?, -?, /?, -h, -H, /h /H -help --help] Display the help text.
 
 The &lt;source> need to be the first argument and [target] is the second if it exists.
