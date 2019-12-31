@@ -36,6 +36,9 @@ namespace Kavics.ApiExplorer.GetApi
         [CommandLineArgument(name: "contenthandler", required: false, aliases: "ch", helpText: "Shows only ContentHandler classes of the sensenet.")]
         public bool ContentHandlerFilter { get; set; }
 
+        [CommandLineArgument(name: "odata", required: false, aliases: "o,od", helpText: "Shows only OData functions and actions of the sensenet.")]
+        public bool OdataFilter { get; set; }
+
         private string _namespaceFilterArg;
         [CommandLineArgument(name: "namespace", required: false, aliases: "n,ns", helpText: "Valid regex that filters the namespaces. For example: \".*sensenet..*\"")]
         internal string NamespaceFilterArg
