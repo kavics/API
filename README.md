@@ -3,7 +3,7 @@ Very simple API explorer for the .NET libraries and executables. Reads all assem
 
 ## USAGE
 
-GetApi &lt;source> [target] [-internalmembers:Boolean] [-allinternals:Boolean] [-namespace:String]  [-contenthandler:Boolean] [?]
+GetApi &lt;source> [target] [-internalmembers:Boolean] [-allinternals:Boolean] [-namespace:String]  [-contenthandlers:Boolean] [?]
 
 ### Arguments
 
@@ -12,7 +12,8 @@ GetApi &lt;source> [target] [-internalmembers:Boolean] [-allinternals:Boolean] [
 - **-allinternals**: (*optional switch*) Shows internal classes and members. Alias: i
 - **-internalmembers**: (*optional switch*) Shows internal members of public classes. Alias: im.
 - **-namespace**: (*optional regex*) Valid regex that filters the namespaces (e.g.: -ns ".*sensenet..*"). Alias: n, ns.
-- **-contenthandler**: (*optional switch*) Shows only ContentHandler classes of the sensenet. Alias: ch
+- **-contenthandlers**: (*optional switch*) Shows only ContentHandler classes of the sensenet. Alias: ch
+- **-odata**: (*optional switch*) Shows only OData functions and actions of the sensenet. Alias: o,od
 - **help**: [?, -?, /?, -h, -H, /h /H -help --help] Display the help text.
 
 The &lt;source> need to be the first argument and [target] is the second if it exists.
@@ -41,6 +42,11 @@ In this section all types are listed with their members. Columns of member (afte
 Visualizes the inheritance tree in two columns
 - namespace (fixed width, aligned left)
 - type name (indent by inheritance level)
+
+### ODATA SECTION
+*sensenet specific*
+
+If the "-odata" argument is present, only the OData functions and actions are printed. The format is similar to that described on "MEMBERS SECTION". The OData members are always written but not categorized if the "-odata" argument is missing.
 
 ## KNOWN ISSUES
 1. The type tree cannot draw the real parent-child relations if any filter hides elements of the inheritance chain.

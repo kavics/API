@@ -10,9 +10,14 @@ namespace Kavics.ApiExplorer.GetApi
 {
     class Program
     {
+        private static readonly string Line =
+            "=================================================================================================";
+
         static void Main(string[] args)
         {
 //args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-contenthandlers"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-odata"};
 
             var exit = false;
             var arguments = new Arguments();
@@ -120,39 +125,48 @@ namespace Kavics.ApiExplorer.GetApi
                     foreach (var error in errors)
                         writer.WriteLine(error);
 
-                Print(writer, relevantTypes, false);
+                if (!arguments.OdataFilter)
+                {
+                    Print(writer, relevantTypes, false);
 
-                writer.WriteLine();
-                writer.WriteLine("=================================================================================================");
-                writer.WriteLine();
-                writer.WriteLine("MEMBERS");
-                writer.WriteLine();
+                    writer.WriteLine();
+                    writer.WriteLine(Line);
+                    writer.WriteLine();
+                    writer.WriteLine("MEMBERS");
+                    writer.WriteLine();
 
-                Print(writer, relevantTypes, true);
+                    Print(writer, relevantTypes, true);
+                }
 
-                writer.WriteLine();
-                writer.WriteLine("=================================================================================================");
-                writer.WriteLine();
-                writer.WriteLine("ODATA FUNCTIONS");
-                writer.WriteLine();
+                if (arguments.OdataFilter)
+                {
+                    writer.WriteLine();
+                    writer.WriteLine(Line);
+                    writer.WriteLine();
+                    writer.WriteLine("ODATA FUNCTIONS");
+                    writer.WriteLine();
 
-                PrintOdataOperations(writer, relevantTypes, false);
+                    PrintOdataOperations(writer, relevantTypes, false);
 
-                writer.WriteLine();
-                writer.WriteLine("=================================================================================================");
-                writer.WriteLine();
-                writer.WriteLine("ODATA ACTIONS");
-                writer.WriteLine();
+                    writer.WriteLine();
+                    writer.WriteLine(Line);
+                    writer.WriteLine();
+                    writer.WriteLine("ODATA ACTIONS");
+                    writer.WriteLine();
 
-                PrintOdataOperations(writer, relevantTypes, true);
+                    PrintOdataOperations(writer, relevantTypes, true);
+                }
 
-                writer.WriteLine();
-                writer.WriteLine("=================================================================================================");
-                writer.WriteLine();
-                writer.WriteLine("TYPE TREE");
-                writer.WriteLine();
+                if (!arguments.OdataFilter)
+                {
+                    writer.WriteLine();
+                    writer.WriteLine(Line);
+                    writer.WriteLine();
+                    writer.WriteLine("TYPE TREE");
+                    writer.WriteLine();
 
-                PrintTree(writer, relevantTypes);
+                    PrintTree(writer, relevantTypes);
+                }
             }
             Console.WriteLine("Finished.");
             Console.WriteLine($"Opening {arguments.TargetFile}.");
@@ -177,11 +191,29 @@ namespace Kavics.ApiExplorer.GetApi
         {
             if (!withMembers)
             {
+                writer.WriteLine();
+                writer.WriteLine(Line);
+                writer.WriteLine();
+                writer.WriteLine("ASSEMBLIES");
+                writer.WriteLine();
+
                 foreach (var asm in relevantTypes.Select(t => t.Assembly).Distinct().OrderBy(x => x))
                     writer.WriteLine($"Assembly\t{asm}");
 
+                writer.WriteLine();
+                writer.WriteLine(Line);
+                writer.WriteLine();
+                writer.WriteLine("NAMESPACES");
+                writer.WriteLine();
+
                 foreach (var ns in relevantTypes.Select(t => t.Namespace).Distinct().OrderBy(x => x))
                     writer.WriteLine($"Namespace\t{ns}");
+
+                writer.WriteLine();
+                writer.WriteLine(Line);
+                writer.WriteLine();
+                writer.WriteLine("TYPES");
+                writer.WriteLine();
             }
 
             foreach (var t in relevantTypes.Where(t => t.IsEnum))
