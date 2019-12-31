@@ -16,8 +16,8 @@ namespace Kavics.ApiExplorer.GetApi
         static void Main(string[] args)
         {
 //args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet"};
-//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-contenthandler"};
-args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-odata"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-contenthandlers"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-odata"};
 
             var exit = false;
             var arguments = new Arguments();

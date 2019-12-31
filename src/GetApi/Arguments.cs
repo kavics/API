@@ -33,7 +33,7 @@ namespace Kavics.ApiExplorer.GetApi
         [CommandLineArgument(name: "internalmembers", required: false, aliases: "im", helpText: "Shows internal members of public classes.")]
         public bool InternalMembers { get; set; }
 
-        [CommandLineArgument(name: "contenthandler", required: false, aliases: "ch", helpText: "Shows only ContentHandler classes of the sensenet.")]
+        [CommandLineArgument(name: "contenthandlers", required: false, aliases: "ch", helpText: "Shows only ContentHandler classes of the sensenet.")]
         public bool ContentHandlerFilter { get; set; }
 
         [CommandLineArgument(name: "odata", required: false, aliases: "o,od", helpText: "Shows only OData functions and actions of the sensenet.")]
