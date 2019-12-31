@@ -10,9 +10,14 @@ namespace Kavics.ApiExplorer.GetApi
 {
     class Program
     {
+        private static readonly string Line =
+            "=================================================================================================";
+
         static void Main(string[] args)
         {
-args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-contenthandlers"};
+//args = new[] {@"C:\Users\kavics\Desktop\API4", "-namespace:SenseNet", "-odata"};
 
             var exit = false;
             var arguments = new Arguments();
@@ -120,23 +125,48 @@ args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
                     foreach (var error in errors)
                         writer.WriteLine(error);
 
-                Print(writer, relevantTypes, false);
+                if (!arguments.OdataFilter)
+                {
+                    Print(writer, relevantTypes, false);
 
-                writer.WriteLine();
-                writer.WriteLine("=================================================================================================");
-                writer.WriteLine();
-                writer.WriteLine("MEMBERS");
-                writer.WriteLine();
+                    writer.WriteLine();
+                    writer.WriteLine(Line);
+                    writer.WriteLine();
+                    writer.WriteLine("MEMBERS");
+                    writer.WriteLine();
 
-                Print(writer, relevantTypes, true);
+                    Print(writer, relevantTypes, true);
+                }
 
-                writer.WriteLine();
-                writer.WriteLine("=================================================================================================");
-                writer.WriteLine();
-                writer.WriteLine("TYPE TREE");
-                writer.WriteLine();
+                if (arguments.OdataFilter)
+                {
+                    writer.WriteLine();
+                    writer.WriteLine(Line);
+                    writer.WriteLine();
+                    writer.WriteLine("ODATA FUNCTIONS");
+                    writer.WriteLine();
 
-                PrintTree(writer, relevantTypes);
+                    PrintOdataOperations(writer, relevantTypes, false);
+
+                    writer.WriteLine();
+                    writer.WriteLine(Line);
+                    writer.WriteLine();
+                    writer.WriteLine("ODATA ACTIONS");
+                    writer.WriteLine();
+
+                    PrintOdataOperations(writer, relevantTypes, true);
+                }
+
+                if (!arguments.OdataFilter)
+                {
+                    writer.WriteLine();
+                    writer.WriteLine(Line);
+                    writer.WriteLine();
+                    writer.WriteLine("TYPE TREE");
+                    writer.WriteLine();
+
+                    PrintTree(writer, relevantTypes);
+                }
             }
             Console.WriteLine("Finished.");
             Console.WriteLine($"Opening {arguments.TargetFile}.");
@@ -161,11 +191,29 @@ args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
         {
             if (!withMembers)
             {
+                writer.WriteLine();
+                writer.WriteLine(Line);
+                writer.WriteLine();
+                writer.WriteLine("ASSEMBLIES");
+                writer.WriteLine();
+
                 foreach (var asm in relevantTypes.Select(t => t.Assembly).Distinct().OrderBy(x => x))
                     writer.WriteLine($"Assembly\t{asm}");
 
+                writer.WriteLine();
+                writer.WriteLine(Line);
+                writer.WriteLine();
+                writer.WriteLine("NAMESPACES");
+                writer.WriteLine();
+
                 foreach (var ns in relevantTypes.Select(t => t.Namespace).Distinct().OrderBy(x => x))
                     writer.WriteLine($"Namespace\t{ns}");
+
+                writer.WriteLine();
+                writer.WriteLine(Line);
+                writer.WriteLine();
+                writer.WriteLine("TYPES");
+                writer.WriteLine();
             }
 
             foreach (var t in relevantTypes.Where(t => t.IsEnum))
@@ -212,6 +260,21 @@ args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
             }
 
         }
+        private static void PrintOdataOperations(TextWriter writer, ApiType[] relevantTypes, bool actions)
+        {
+            foreach (var t in relevantTypes.Where(t => t.IsClass))
+            {
+                var methods = actions
+                    ? t.Methods.Where(m => m.IsOdataAction).ToArray()
+                    : t.Methods.Where(m => m.IsOdataFunction).ToArray();
+                if (!methods.Any())
+                    continue;
+
+                writer.WriteLine($"{t.Assembly}\t{t.Namespace}\t{t.Name}");
+                foreach (var item in methods)
+                    writer.WriteLine("\t\t\t\t" + item);
+            }
+        }
         private static void WriteMembers(TextWriter writer, ApiType t)
         {
             foreach (var item in t.Fields)
@@ -233,19 +296,22 @@ args = new[] {@"C:\Users\kavics\Desktop\API2", "-namespace:SenseNet"};
         private static void PrintTree(TextWriter writer, ApiType[] types)
         {
             var roots = DiscoverTree(types);
+            var assemblyWidth = types.Max(t => t.Assembly?.Length ?? 0) + 2;
             var nameSpaceWidth = types.Max(t => t.Namespace?.Length ?? 0) + 2;
             foreach (var root in roots)
-                PrintTreeNode(writer, root, nameSpaceWidth, "");
+                PrintTreeNode(writer, root, assemblyWidth, nameSpaceWidth, "");
         }
-        private static void PrintTreeNode(TextWriter writer, ApiType node, int nameSpaceWidth, string indent)
+        private static void PrintTreeNode(TextWriter writer, ApiType node, int assemblyWidth, int nameSpaceWidth, string indent)
         {
+            writer.Write((node.Assembly ?? " ").PadRight(assemblyWidth));
+            writer.Write("| ");
             writer.Write((node.Namespace ?? " ").PadRight(nameSpaceWidth));
             writer.Write("| ");
             writer.Write(indent);
             writer.WriteLine(node.Name);
             var childIndent = indent + "  ";
             foreach (var child in node.Children)
-                PrintTreeNode(writer, child, nameSpaceWidth, childIndent);
+                PrintTreeNode(writer, child, assemblyWidth, nameSpaceWidth, childIndent);
         }
         private static IEnumerable<ApiType> DiscoverTree(ApiType[] apiTypes)
         {

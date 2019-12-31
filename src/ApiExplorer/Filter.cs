@@ -3,12 +3,12 @@
 namespace Kavics.ApiExplorer
 {
     /// <summary>
-    /// Filters the types and members when assemlies are scanned.
+    /// Filters the types and members when assemblies are scanned.
     /// </summary>
     public class Filter
     {
         /// <summary>
-        /// Regex for filter namespace of a type. The typelist will contain only matching types.
+        /// Regex for filter namespace of a type. The type list will contain only matching types.
         /// For example ".*Kavics.*" means types that's namespace contains the "Kavics".
         /// </summary>
         public Regex NamespaceFilter { get; set; }
