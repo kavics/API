@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
+// ReSharper disable RedundantOverriddenMember
+// ReSharper disable PublicConstructorInAbstractClass
+#pragma warning disable 169
+// ReSharper disable once CheckNamespace
 namespace Tests.TestClasses2
 {
     public abstract class PublicClass1
@@ -43,7 +45,7 @@ namespace Tests.TestClasses2
 
         private static void MS0() { }
         protected static void MS1() { }
-        protected static internal void MS2() { }
+        protected internal static void MS2() { }
         internal static void MS3() { }
         public static void MS4() { }
 

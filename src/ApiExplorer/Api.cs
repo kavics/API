@@ -10,70 +10,16 @@ namespace Kavics.ApiExplorer
     {
         private string[] _errors;
         private ApiType[] _types;
-        private Filter _filter;
+        private readonly Filter _filter;
 
-        private string BinPath { get; set; }
+        private string BinPath { get; }
 
         public Api(string binPath, Filter filter = null)
         {
             BinPath = binPath.Trim('\\');
-            this._filter = filter ?? new Filter();
+            _filter = filter ?? new Filter();
         }
 
-        //private static Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
-        public ApiType[] GetTypes_OLD()
-        {
-            if (_types == null)
-            {
-                var assemblyPaths = Directory.GetFiles(BinPath, "*.dll").Union(Directory.GetFiles(BinPath, "*.exe")).ToArray();
-                if (assemblyPaths.Length == 0)
-                    throw new Exception("Source directory does not contain any dll or exe file.");
-
-                //foreach (var path in assemblyPaths)
-                //{
-                //    var assembly = Assembly.LoadFrom(path);
-                //    foreach(var type in assembly.GetTypes())
-                //    {
-                //        if (type.Name.StartsWith("<") || type.FullName.StartsWith("<"))
-                //            continue;
-                //        if(_typeCache.ContainsKey(type.FullName))
-                //        {
-                //            int q = 1;
-                //        }
-                //        _typeCache.Add(type.FullName, type);
-                //    }
-                //}
-                foreach (var path in assemblyPaths)
-                    Assembly.LoadFrom(path);
-
-                var namespaceRegex = _filter.NamespaceFilter;
-
-                var asms = AppDomain.CurrentDomain.GetAssemblies();
-                var relevantAsms = asms.Where(a => Path.GetDirectoryName(a.Location) == BinPath).ToArray();
-                var types = relevantAsms
-                    .SelectMany(a => _filter.WithInternals ? a.GetTypes() : a.GetExportedTypes(), (a, t) => t);
-
-                // skip auto implementations e.g. "<>c__DisplayClass29_0"
-                types = types.Where(t => !t.Name.StartsWith("<"));
-
-                if (namespaceRegex != null)
-                    types = types.Where(x => namespaceRegex.IsMatch(x.Namespace ?? ""));
-
-                var apiTypes = types
-                    .Select(t => new ApiType(t, _filter.WithInternalMembers));
-
-                if (_filter.ContentHandlerFilter)
-                    apiTypes = apiTypes.Where(t => t.IsContentHandler);
-
-                apiTypes = apiTypes
-                    .OrderBy(a => a.Assembly)
-                    .ThenBy(a => a.Namespace)
-                    .ThenBy(a => a.Name);
-
-                _types = apiTypes.ToArray();
-            }
-            return _types;
-        }
         public ApiType[] GetTypes(out string[] errors)
         {
             var errorMessages = new List<string>();
@@ -109,10 +55,9 @@ namespace Kavics.ApiExplorer
                 {
                     if (Path.GetDirectoryName(asm.Location) == BinPath)
                     {
-                        Type[] types;
                         try
                         {
-                            types = _filter.WithInternals ? asm.GetTypes() : asm.GetExportedTypes();
+                            var types = _filter.WithInternals ? asm.GetTypes() : asm.GetExportedTypes();
                             foreach (var type in types)
                                 if (!type.Name.StartsWith("<"))
                                     if (namespaceRegex == null || namespaceRegex.IsMatch(type.Namespace ?? ""))
@@ -157,7 +102,7 @@ namespace Kavics.ApiExplorer
                     return origType.Name;
             }
             var baseName = GetSimpleName(type.Name.Split('`')[0]);
-            var genericPart = (type.GenericTypeArguments.Length > 0)
+            var genericPart = type.GenericTypeArguments.Length > 0
                 ? string.Join(", ", type.GenericTypeArguments.Select(GetTypeName).ToArray())
                 : string.Join(", ", typeInfo.GenericTypeParameters.Select(GetTypeName).ToArray());
             return $"{baseName}<{genericPart}>";

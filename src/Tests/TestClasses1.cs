@@ -1,4 +1,8 @@
-﻿namespace Tests.TestClasses1
+﻿// ReSharper disable InconsistentNaming
+// ReSharper disable once CheckNamespace
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMember.Local
+namespace Tests.TestClasses1
 {
     public enum PubEnum { A, B, C }
     internal enum IntEnum { A, B, C }

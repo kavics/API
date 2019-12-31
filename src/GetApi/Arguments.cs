@@ -1,5 +1,4 @@
 ﻿using SenseNet.Tools.CommandLineArguments;
-using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -7,40 +6,31 @@ namespace Kavics.ApiExplorer.GetApi
 {
     internal class Arguments
     {
-        [NoNameOption(order: 0, required: true, nameInHelp: "source", helpText: "Path of the directory containing assemblies.")]
+        [NoNameOption(0, true, "source", "Path of the directory containing assemblies.")]
         public string SourceDirectory { get; set; }
 
-        [NoNameOption(order: 1, required: false, nameInHelp: "target", helpText: "Path of output file. Default: <source\\api.txt>")]
+        [NoNameOption(1, false, "target", "Path of output file. Default: <source\\api.txt>")]
         private string TargetFileArg { get; set; }
         private string _targetFile;
-        public string TargetFile
-        {
-            get
-            {
-                if (_targetFile == null)
-                {
-                    _targetFile = TargetFileArg != null
-                        ? Path.GetFullPath(TargetFileArg)
-                        : Path.Combine(SourceDirectory, "api.txt");
-                }
-                return _targetFile;
-            }
-        }
+        public string TargetFile =>
+            _targetFile ?? (_targetFile = TargetFileArg != null
+                ? Path.GetFullPath(TargetFileArg)
+                : Path.Combine(SourceDirectory, "api.txt"));
 
-        [CommandLineArgument(name: "allinternals", required: false, aliases: "i", helpText: "Shows internal classes and members")]
+        [CommandLineArgument("AllInternals", false, "i", "Shows internal classes and members")]
         public bool AllInternals { get; set; }
 
-        [CommandLineArgument(name: "internalmembers", required: false, aliases: "im", helpText: "Shows internal members of public classes.")]
+        [CommandLineArgument("InternalMembers", false, "im", "Shows internal members of public classes.")]
         public bool InternalMembers { get; set; }
 
-        [CommandLineArgument(name: "contenthandlers", required: false, aliases: "ch", helpText: "Shows only ContentHandler classes of the sensenet.")]
+        [CommandLineArgument("ContentHandlers", false, "ch", "Shows only ContentHandler classes of the sensenet.")]
         public bool ContentHandlerFilter { get; set; }
 
-        [CommandLineArgument(name: "odata", required: false, aliases: "o,od", helpText: "Shows only OData functions and actions of the sensenet.")]
+        [CommandLineArgument("OData", false, "o,od", "Shows only OData functions and actions of the sensenet.")]
         public bool OdataFilter { get; set; }
 
         private string _namespaceFilterArg;
-        [CommandLineArgument(name: "namespace", required: false, aliases: "n,ns", helpText: "Valid regex that filters the namespaces. For example: \".*sensenet..*\"")]
+        [CommandLineArgument("Namespace", false, "n,ns", "Valid regex that filters the namespaces. For example: \".*sensenet..*\"")]
         internal string NamespaceFilterArg
         {
             get => _namespaceFilterArg;
